@@ -1,0 +1,1435 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>打工人的 AI 无脑教程</title>
+<meta name="description" content="写给普通人的 AI 极简指南：搜一下直达结果，五个板块按需查看——原理、认知与提问、主流工具、场景技巧、身份与模板。">
+<style>
+:root{
+  --bg:#FFFFFF; --bg-gray:#F5F5F7; --ink:#1D1D1F; --ink-2:#6E6E73; --ink-3:#9B9BA1;
+  --line:#D2D2D7; --line-soft:#E9E9ED;
+  --accent:#0071E3; --accent-deep:#0058B9; --accent-soft:#EBF3FE;
+  --r-lg:22px; --r-md:14px; --r-sm:10px;
+  --sh-1:0 1px 3px rgba(0,0,0,.05);
+  --sh-2:0 12px 36px rgba(0,0,0,.10);
+  --maxw:1120px; --nav-h:52px;
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","PingFang SC","Hiragino Sans GB","Microsoft YaHei","Segoe UI",sans-serif;
+  --mono:"SF Mono",SFMono-Regular,Menlo,Consolas,"PingFang SC",monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+/* 确保 hidden 属性生效（否则会被 display:flex 等作者样式覆盖） */
+[hidden]{display:none!important}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--bg);color:var(--ink);font-size:17px;line-height:1.7;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+::selection{background:rgba(0,113,227,.18)}
+button{font-family:inherit}
+
+/* ============ 顶栏 ============ */
+.nav{position:fixed;top:0;left:0;right:0;z-index:200;height:var(--nav-h);background:rgba(255,255,255,.82);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid rgba(0,0,0,.07)}
+.nav-inner{max-width:var(--maxw);margin:0 auto;padding:0 22px;height:100%;display:flex;align-items:center;gap:14px}
+.nav-logo{font-size:15px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:7px;white-space:nowrap}
+.nav-logo:hover{text-decoration:none}
+.nav-back{display:none;align-items:center;gap:5px;font-size:13.5px;font-weight:600;color:var(--accent);background:var(--accent-soft);border:0;border-radius:980px;padding:7px 15px;cursor:pointer;transition:.2s;margin-left:auto}
+.nav-back:hover{background:var(--accent);color:#fff}
+.nav.in-sub .nav-back{display:inline-flex}
+.nav-home-link{font-size:13px;color:var(--ink-2);margin-left:auto;padding:6px 10px;border-radius:8px}
+.nav-home-link:hover{color:var(--accent);background:var(--accent-soft);text-decoration:none}
+.nav.in-sub .nav-home-link{display:none}
+
+/* ============ 视图系统 ============ */
+.view{display:none}
+.view.active{display:block;animation:viewIn .45s cubic-bezier(.2,.6,.25,1)}
+@keyframes viewIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.view.active{animation:none}}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+.subview{padding:calc(var(--nav-h) + 44px) 0 90px}
+.subview.gray{background:var(--bg-gray)}
+.flash{animation:flash 2s ease}
+@keyframes flash{0%,60%{box-shadow:0 0 0 3px rgba(0,113,227,.45)}100%{box-shadow:0 0 0 0 rgba(0,113,227,0)}}
+
+/* ============ 首页 ============ */
+.home{min-height:calc(100vh - var(--nav-h));display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:90px 22px 70px;
+  background:
+    radial-gradient(58% 46% at 18% 0%, rgba(0,113,227,.10), transparent 62%),
+    radial-gradient(48% 38% at 84% 8%, rgba(125,86,222,.09), transparent 62%),
+    var(--bg);}
+.home-eyebrow{font-size:15px;font-weight:600;color:var(--accent);margin-bottom:16px}
+.home h1{font-size:clamp(34px,5vw,60px);font-weight:700;letter-spacing:-.02em;line-height:1.14}
+.home h1 .grad{background:linear-gradient(96deg,#0071E3 5%,#7D56DE 55%,#D63387 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.home-sub{margin-top:16px;font-size:clamp(15px,1.6vw,18px);color:var(--ink-2)}
+.searchbox{display:flex;gap:10px;width:min(620px,100%);margin-top:38px}
+.searchbox input{flex:1;min-width:0;border:1.5px solid var(--line);border-radius:980px;padding:15px 26px;font-size:16px;background:#fff;outline:none;transition:.2s;box-shadow:var(--sh-1);font-family:inherit}
+.searchbox input:focus{border-color:var(--accent);box-shadow:0 0 0 5px var(--accent-soft)}
+.searchbox .btn-pill{border:0;cursor:pointer}
+.hot{margin-top:16px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center;align-items:center}
+.hot span{font-size:13px;color:var(--ink-3)}
+.hot button{border:1px solid var(--line);background:#fff;color:var(--ink-2);font-size:13px;font-weight:600;border-radius:980px;padding:5px 14px;cursor:pointer;transition:.18s}
+.hot button:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.entry-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;width:min(1060px,100%);margin-top:52px}
+.entry{background:#fff;border:1px solid rgba(0,0,0,.05);border-radius:var(--r-lg);padding:22px 18px;text-align:left;cursor:pointer;transition:transform .3s cubic-bezier(.2,.6,.25,1),box-shadow .3s,border-color .3s;box-shadow:var(--sh-1);display:flex;flex-direction:column;gap:6px}
+.entry:hover{transform:translateY(-5px);box-shadow:var(--sh-2);border-color:#CBE2FA;text-decoration:none}
+.entry .e-num{font-size:11px;font-weight:800;letter-spacing:.14em;color:var(--accent)}
+.entry .e-icon{font-size:26px;line-height:1.2}
+.entry h3{font-size:16px;letter-spacing:-.01em;color:var(--ink)}
+.entry p{font-size:12.5px;color:var(--ink-2);line-height:1.55}
+.entry .e-go{margin-top:auto;padding-top:8px;font-size:12.5px;font-weight:700;color:var(--accent)}
+.home-foot{margin-top:32px;font-size:12.5px;color:var(--ink-3)}
+.btn-pill{display:inline-flex;align-items:center;gap:6px;border-radius:980px;padding:13px 26px;font-size:15px;font-weight:600;cursor:pointer;transition:.22s;border:1px solid transparent;text-decoration:none;white-space:nowrap}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent-deep);transform:translateY(-1px);text-decoration:none}
+/* ============ 搜索结果视图 ============ */
+.res-head{margin-bottom:30px}
+.res-head h2{font-size:clamp(26px,3.6vw,42px);font-weight:700;letter-spacing:-.018em;line-height:1.2}
+.res-head h2 em{font-style:normal;color:var(--accent)}
+.res-head p{margin-top:10px;color:var(--ink-2);font-size:15.5px}
+.res-head .res-back{display:inline-flex;align-items:center;gap:5px;font-size:13.5px;font-weight:600;color:var(--accent);background:var(--accent-soft);border:0;border-radius:980px;padding:7px 15px;cursor:pointer;margin-bottom:22px;transition:.2s}
+.res-head .res-back:hover{background:var(--accent);color:#fff}
+.res-list{display:grid;gap:14px;max-width:880px}
+.res-item{background:#fff;border:1px solid rgba(0,0,0,.05);border-radius:var(--r-lg);padding:22px 24px;box-shadow:var(--sh-1);display:flex;gap:18px;align-items:center;flex-wrap:wrap;transition:transform .25s,box-shadow .25s}
+.res-item:hover{transform:translateY(-2px);box-shadow:var(--sh-2)}
+.res-item .r-main{flex:1;min-width:250px}
+.res-chip{display:inline-block;font-size:11.5px;font-weight:800;border-radius:980px;padding:2px 10px;margin-right:9px;vertical-align:2px}
+.chip-scene{background:var(--accent-soft);color:var(--accent-deep)}
+.chip-tool{background:#E3F0FE;color:#0F5FB8}
+.chip-tpl{background:#F3EEFD;color:#6D3FD4}
+.chip-id{background:#FCF0DF;color:#A55E0F}
+.chip-concept{background:#E3F5EA;color:#197A43}
+.res-item h3{display:inline;font-size:17.5px;letter-spacing:-.01em}
+.res-item .r-desc{font-size:14px;color:var(--ink-2);margin-top:7px;line-height:1.65}
+.res-item .r-kw{font-size:12.5px;color:var(--ink-3);margin-top:5px}
+.res-actions{display:flex;gap:8px;flex-wrap:wrap}
+.res-actions .go-link{font-size:13.5px;font-weight:600;color:var(--accent);white-space:nowrap}
+.mini-copy{border:1px solid var(--line);background:#fff;color:var(--ink-2);font-size:12.5px;font-weight:600;border-radius:980px;padding:5px 13px;cursor:pointer;transition:.2s;white-space:nowrap}
+.mini-copy:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.res-empty{text-align:center;padding:70px 0 50px;color:var(--ink-2)}
+.res-empty .e-emoji{font-size:44px;margin-bottom:14px}
+.res-empty h3{font-size:20px;color:var(--ink);margin-bottom:8px}
+
+/* ============ 板块通用 ============ */
+.band-head{max-width:800px;margin:0 auto 58px;text-align:center}
+.chapter{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:700;letter-spacing:.16em;color:var(--accent);margin-bottom:16px}
+.chapter::before{content:"";width:22px;height:1.5px;background:var(--accent);display:inline-block}
+.band-head h2{font-size:clamp(30px,4.2vw,50px);font-weight:700;letter-spacing:-.018em;line-height:1.16}
+.band-head .lede{margin-top:18px;font-size:18px;color:var(--ink-2);line-height:1.7}
+.sub-head{font-size:clamp(21px,2.6vw,27px);font-weight:700;letter-spacing:-.012em;margin:0 auto 30px;text-align:center}
+
+/* ============ 卡片 ============ */
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:22px}
+.card{background:#fff;border-radius:var(--r-lg);padding:32px;border:1px solid rgba(0,0,0,.05);box-shadow:var(--sh-1);transition:transform .35s cubic-bezier(.2,.6,.25,1),box-shadow .35s}
+.card:hover{transform:translateY(-4px);box-shadow:var(--sh-2)}
+.subview:not(.gray) .card{background:var(--bg-gray);border-color:transparent}
+.card h3{font-size:21px;font-weight:700;letter-spacing:-.01em;margin-bottom:10px}
+.card p{font-size:15.5px;color:var(--ink-2);line-height:1.75}
+.card .conclusion{margin-top:14px;font-size:14px;font-weight:600;color:var(--accent-deep)}
+.card .num{display:inline-flex;width:30px;height:30px;border-radius:50%;background:var(--accent);color:#fff;font-size:14px;font-weight:700;align-items:center;justify-content:center;margin-bottom:16px}
+
+/* 比喻横幅 */
+.metaphor{display:flex;gap:24px;align-items:center;background:#fff;border-radius:var(--r-lg);padding:30px 36px;box-shadow:var(--sh-1);border:1px solid rgba(0,0,0,.05);max-width:900px;margin:0 auto 46px}
+.metaphor .m-emoji{font-size:46px;flex:none}
+.metaphor p{font-size:17px;color:var(--ink);line-height:1.7}
+.metaphor p span{color:var(--ink-2)}
+
+/* ============ 首屏对话演示 ============ */
+.demo{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:860px;margin:0 auto}
+.demo-card{border-radius:var(--r-lg);padding:24px;background:#fff;border:1px solid var(--line-soft);box-shadow:var(--sh-1);text-align:left}
+.demo-card.good{background:linear-gradient(180deg,#F0F7FF,#FFFFFF);border-color:#CBE2FA}
+.demo-label{font-size:12px;font-weight:700;letter-spacing:.06em;margin-bottom:10px}
+.demo-card.bad .demo-label{color:#B4483F}
+.demo-card.good .demo-label{color:#1F7A45}
+.demo-card p{font-size:14.5px;color:var(--ink);line-height:1.75}
+.demo-note{margin-top:10px;font-size:12.5px;color:var(--ink-3)}
+.hl{border-radius:5px;padding:0 4px;font-weight:600}
+.hl-role{background:#E4E4FB;color:#3B3BB0}
+.hl-bg{background:#D9F2E5;color:#0E7A43}
+.hl-task{background:#FDE6D3;color:#B35A0E}
+.hl-req{background:#FBDCE9;color:#B02770}
+
+/* ============ 搜索指引 ============ */
+.search-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;max-width:960px;margin:0 auto}
+.search-card{background:#fff;border-radius:var(--r-lg);padding:34px;box-shadow:var(--sh-1);border:1px solid rgba(0,0,0,.05)}
+.search-card .s-tag{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:700;padding:5px 13px;border-radius:980px;margin-bottom:16px}
+.s-tag.precise{background:var(--accent-soft);color:var(--accent-deep)}
+.s-tag.broad{background:#F3EEFD;color:#6D3FD4}
+.search-card h3{font-size:23px;font-weight:700;letter-spacing:-.01em;margin-bottom:6px}
+.search-card .s-when{font-size:14px;color:var(--ink-3);margin-bottom:16px}
+.s-points{list-style:none}
+.s-points li{font-size:15px;color:var(--ink-2);padding-left:22px;position:relative;margin-bottom:8px;line-height:1.65}
+.s-points li::before{content:"✓";position:absolute;left:0;color:var(--accent);font-weight:700}
+.s-example{background:var(--bg-gray);border-radius:var(--r-md);padding:13px 16px;font-size:14px;margin-top:10px;line-height:1.65}
+.s-example .tag{display:block;font-size:11.5px;font-weight:700;letter-spacing:.05em;margin-bottom:4px}
+.s-example.good .tag{color:#1F7A45}
+.s-example.good{color:#1F4630}
+.s-example.bad .tag{color:#B4483F}
+.s-example.bad{color:#6E3A36}
+.combo{margin:26px auto 0;max-width:960px;background:var(--ink);color:#F5F5F7;border-radius:var(--r-lg);padding:28px 32px;display:flex;gap:20px;align-items:flex-start}
+.combo .c-badge{flex:none;font-size:12px;font-weight:800;letter-spacing:.1em;background:rgba(255,255,255,.14);border-radius:8px;padding:6px 12px;margin-top:2px}
+.combo h3{font-size:18px;color:#fff;margin-bottom:6px}
+.combo p{font-size:14.5px;color:#C9C9CF;line-height:1.7}
+.combo p b{color:#fff}
+
+/* ============ 工具矩阵 ============ */
+.group-label{display:flex;align-items:center;gap:14px;font-size:14px;font-weight:700;color:var(--ink-2);margin:44px 0 18px}
+.group-label::after{content:"";flex:1;height:1px;background:var(--line-soft)}
+.group-label:first-of-type{margin-top:0}
+.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.tool{background:#fff;border-radius:var(--r-lg);padding:26px;box-shadow:var(--sh-1);border:1px solid rgba(0,0,0,.05);display:flex;flex-direction:column;gap:9px;transition:transform .35s cubic-bezier(.2,.6,.25,1),box-shadow .35s}
+.tool:hover{transform:translateY(-4px);box-shadow:var(--sh-2)}
+.tool-head{display:flex;align-items:center;gap:12px}
+.tool-logo{width:46px;height:46px;border-radius:13px;background:var(--bg-gray);display:flex;align-items:center;justify-content:center;font-size:24px;flex:none}
+.tool h3{font-size:18px;letter-spacing:-.01em}
+.tool .vendor{font-size:12px;color:var(--ink-3);display:block;margin-top:1px}
+.tool .desc{font-size:14.5px;color:var(--ink-2);line-height:1.65}
+.tool .fit{font-size:13.5px;color:var(--ink-2)}
+.tool .fit b{color:var(--ink);font-weight:600}
+.tool a.go{margin-top:auto;padding-top:6px;font-size:14px;font-weight:600;color:var(--accent);display:inline-flex;align-items:center;gap:4px}
+.tool a.go:hover{text-decoration:none;color:var(--accent-deep)}
+.vert-line{margin-top:34px;background:#fff;border-radius:var(--r-lg);padding:20px 26px;box-shadow:var(--sh-1);border:1px solid rgba(0,0,0,.05);font-size:14.5px;color:var(--ink-2);display:flex;flex-wrap:wrap;gap:6px 18px;align-items:center}
+.vert-line b{color:var(--ink);font-size:13.5px;font-weight:700}
+.res-line{margin-top:18px;font-size:13.5px;color:var(--ink-3);text-align:center}
+.res-line a{font-weight:600}
+/* ============ 场景 ============ */
+.seg-wrap{text-align:center}
+.seg{display:inline-flex;background:#E9E9ED;border-radius:980px;padding:4px;gap:2px;margin:0 auto 40px}
+.seg button{border:0;background:transparent;font-size:14.5px;font-weight:600;color:var(--ink-2);padding:9px 22px;border-radius:980px;cursor:pointer;transition:.25s;white-space:nowrap}
+.seg button.active{background:#fff;color:var(--ink);box-shadow:0 1px 5px rgba(0,0,0,.14)}
+.seg button .cnt{font-size:11.5px;color:var(--ink-3);margin-left:3px}
+.seg button.active .cnt{color:var(--accent)}
+.scene-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+.scene{background:#fff;border-radius:var(--r-lg);padding:28px;box-shadow:var(--sh-1);border:1px solid rgba(0,0,0,.05);transition:transform .35s cubic-bezier(.2,.6,.25,1),box-shadow .35s;display:flex;flex-direction:column}
+.scene:hover{transform:translateY(-4px);box-shadow:var(--sh-2)}
+.scene-top{display:flex;align-items:center;gap:12px;margin-bottom:4px}
+.scene-icon{font-size:26px}
+.scene h3{font-size:19px;letter-spacing:-.01em}
+.scene>p{font-size:14.5px;color:var(--ink-2);line-height:1.65}
+.scene-steps{list-style:none;margin:14px 0 0;display:grid;gap:8px}
+.scene-steps li{font-size:14px;color:var(--ink);background:var(--bg-gray);border-radius:var(--r-md);padding:11px 15px;line-height:1.7;display:flex;gap:10px}
+.scene-steps .step-n{flex:none;width:20px;height:20px;border-radius:50%;background:var(--accent);color:#fff;font-size:11.5px;font-weight:800;display:flex;align-items:center;justify-content:center;margin-top:2px}
+.scene-tip{margin-top:12px;font-size:13px;color:#8A5A12;background:#FCF3E3;border-radius:var(--r-md);padding:10px 14px;line-height:1.65}
+.scene-tip b{color:#7A4E0A}
+.scene-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:16px;flex-wrap:wrap}
+.scene-tools{font-size:12.5px;color:var(--ink-3)}
+.scene-tools a{font-weight:600}
+.tpl-link{font-size:13.5px;font-weight:600;color:var(--accent);white-space:nowrap}
+
+/* ============ 身份折叠 ============ */
+.idlist{max-width:840px;margin:0 auto;display:grid;gap:12px}
+details.idrow{background:#fff;border-radius:var(--r-md);box-shadow:var(--sh-1);border:1px solid rgba(0,0,0,.05);overflow:hidden;transition:box-shadow .3s}
+details.idrow[open]{box-shadow:var(--sh-2)}
+details.idrow summary{list-style:none;cursor:pointer;padding:18px 22px;display:flex;align-items:center;gap:13px;font-weight:600;font-size:16.5px;user-select:none}
+details.idrow summary::-webkit-details-marker{display:none}
+details.idrow summary .id-emoji{font-size:22px}
+details.idrow summary .id-kick{margin-left:auto;font-size:13px;font-weight:600;color:var(--accent)}
+.idbody{padding:2px 24px 20px 58px;display:grid;gap:8px;font-size:15px;color:var(--ink-2);line-height:1.65}
+.idbody b{color:var(--ink);font-weight:600}
+.idbody .first{color:var(--accent-deep)}
+.idbody .warn{color:#8A5A12}
+
+/* ============ 提示词模板 ============ */
+.tpl-note{max-width:860px;margin:0 auto 26px;font-size:14px;color:var(--ink-2);text-align:center;line-height:1.7}
+.tpl-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.tpl{background:#fff;border-radius:var(--r-lg);padding:26px;box-shadow:var(--sh-1);border:1px solid rgba(0,0,0,.05);display:flex;flex-direction:column;gap:12px}
+.tpl-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.tpl h3{font-size:18px;letter-spacing:-.01em}
+.tpl-chip{font-size:11.5px;font-weight:800;padding:3px 11px;border-radius:980px;white-space:nowrap}
+.chip-work{background:var(--accent-soft);color:var(--accent-deep)}
+.chip-learn{background:#E3F5EA;color:#197A43}
+.chip-life{background:#FCF0DF;color:#A55E0F}
+.chip-create{background:#FBE8F1;color:#B02A6E}
+.tpl-usage{font-size:13px;color:var(--ink-3);line-height:1.6}
+.tpl pre{background:var(--bg-gray);border-radius:var(--r-md);padding:16px 18px;font-size:13.5px;line-height:1.78;white-space:pre-wrap;word-break:break-word;font-family:var(--mono);color:var(--ink)}
+.copy-btn{align-self:flex-start;background:var(--accent-soft);color:var(--accent-deep);border:0;font-weight:700;font-size:13.5px;padding:8px 17px;border-radius:980px;cursor:pointer;transition:.2s}
+.copy-btn:hover{background:var(--accent);color:#fff}
+.copy-btn.copied{background:#1F7A3D;color:#fff}
+
+/* ============ 深浅分级 stepper ============ */
+.levels{max-width:900px;margin:0 auto;display:grid;gap:18px}
+.level{background:#fff;border-radius:var(--r-lg);padding:28px 30px;box-shadow:var(--sh-1);border:1px solid rgba(0,0,0,.05);position:relative}
+.level .lv-tag{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:800;letter-spacing:.08em;color:#fff;background:var(--ink);border-radius:7px;padding:4px 11px;margin-bottom:14px}
+.level h3{font-size:20px;font-weight:700;letter-spacing:-.01em;margin-bottom:8px}
+.level>p{font-size:15px;color:var(--ink-2);line-height:1.7}
+.level .lv-detail{margin-top:14px;display:grid;gap:10px}
+.lv-detail .row{font-size:14px;color:var(--ink-2);background:var(--bg-gray);border-radius:var(--r-md);padding:12px 15px;line-height:1.7}
+.lv-detail .row b{color:var(--ink)}
+.lv-detail .row code{font-family:var(--mono);font-size:12.5px;background:#fff;border:1px solid var(--line-soft);border-radius:6px;padding:1px 6px;color:var(--accent-deep)}
+.combo-table{width:100%;border-collapse:collapse;margin-top:16px;background:#fff;border-radius:var(--r-md);overflow:hidden;box-shadow:var(--sh-1);font-size:14px}
+.combo-table th{background:var(--bg-gray);text-align:left;font-size:13px;color:var(--ink-2);padding:10px 16px;border-bottom:1px solid var(--line-soft)}
+.combo-table td{padding:11px 16px;border-bottom:1px solid var(--line-soft);color:var(--ink-2);line-height:1.6}
+.combo-table tr:last-child td{border-bottom:0}
+.combo-table td:first-child{font-weight:700;color:var(--ink);white-space:nowrap}
+.combo-table td:nth-child(2){white-space:nowrap}
+
+/* ============ 结尾三句话 ============ */
+.final{background:var(--ink);padding:90px 0;text-align:center;margin-top:0}
+.final .chapter{color:#7DB3F0}
+.final .chapter::before{background:#7DB3F0}
+.final h2{font-size:clamp(26px,3.6vw,40px);font-weight:700;color:#fff;letter-spacing:-.015em;line-height:1.22}
+.final .lede{margin-top:14px;color:#A9A9B2;font-size:16px}
+.final-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:48px;text-align:left}
+.final-item{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.09);border-radius:var(--r-lg);padding:26px}
+.final-item .f-emoji{font-size:26px;margin-bottom:12px}
+.final-item h3{font-size:17px;color:#fff;margin-bottom:7px}
+.final-item p{font-size:14px;color:#B9B9C2;line-height:1.7}
+.final-item p b{color:#fff}
+
+/* ============ 页脚 ============ */
+footer{background:var(--bg-gray);padding:50px 0 34px;font-size:13.5px;color:var(--ink-2)}
+.foot-grid{display:grid;grid-template-columns:1.3fr .8fr 1.5fr;gap:44px;padding-bottom:26px;border-bottom:1px solid var(--line)}
+.foot-brand{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:10px;display:flex;align-items:center;gap:7px}
+.foot-col p{line-height:1.8;margin-bottom:5px}
+.foot-col strong{display:block;color:var(--ink);font-size:13.5px;margin-bottom:10px}
+.foot-col a{display:block;color:var(--ink-2);padding:3px 0}
+.foot-col a:hover{color:var(--ink)}
+.foot-bar{padding-top:22px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;color:var(--ink-3);font-size:12.5px}
+
+/* ============ 滚动显现 ============ */
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.65,.25,1)}
+.reveal.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+
+/* ============ 响应式 ============ */
+@media (max-width:1020px){
+  .grid-3,.tool-grid,.final-grid{grid-template-columns:1fr 1fr}
+  .tpl-grid,.search-grid,.scene-grid,.demo{grid-template-columns:1fr}
+  .foot-grid{grid-template-columns:1fr 1fr}
+  .entry-grid{grid-template-columns:repeat(3,1fr)}
+}
+@media (max-width:680px){
+  .subview{padding:calc(var(--nav-h) + 32px) 0 64px}
+  .grid-3,.grid-2,.tool-grid,.tpl-grid,.search-grid,.scene-grid,.final-grid,.foot-grid,.entry-grid{grid-template-columns:1fr}
+  .home{padding:70px 22px 56px}
+  .searchbox{flex-direction:column}
+  .metaphor{flex-direction:column;text-align:center;gap:14px;padding:26px}
+  .combo{flex-direction:column;gap:12px}
+  .final{padding:66px 0}
+  .seg{flex-wrap:wrap;border-radius:var(--r-lg)}
+  .seg button{flex:1 1 40%}
+  .nav-home-link{display:none}
+  .res-item{flex-direction:column;align-items:flex-start}
+}
+</style>
+</head>
+<body>
+
+<noscript>
+  <div style="position:fixed;inset:0;background:#fff;z-index:9999;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center;font-size:15px;line-height:2;color:#1D1D1F">
+    <div>⚠️ 当前环境未启用 JavaScript，页面交互不可用。<br>请直接在浏览器中打开 index.html 文件，或在文件管理器中双击用 Chrome / Edge / Safari 打开。</div>
+  </div>
+</noscript>
+
+<header class="nav" id="nav">
+  <div class="nav-inner">
+    <a class="nav-logo" href="#/home">🧠 打工人的 AI 无脑教程</a>
+    <button class="nav-back" id="navBack">← 返回</button>
+    <a class="nav-home-link" href="#/home">首页</a>
+  </div>
+</header>
+
+<!-- ================= 视图：首页 ================= -->
+<section class="view active" id="view-home">
+  <div class="home">
+    <p class="home-eyebrow">写给每一个想用 AI 省时间的人</p>
+    <h1>把 AI 从聊天框，<br>变成你的<span class="grad">第二双手</span>。</h1>
+    <p class="home-sub">搜一下直达结果，或从六个板块按需学起：懂原理 → 换认知 → 选工具 → 抄场景 → 拿模板 → 玩高阶。</p>
+    <form class="searchbox" id="searchForm">
+      <input type="search" id="searchInput" placeholder="搜一搜：周报、英语、旅行、豆包、PPT、简历……" autocomplete="off">
+      <button type="submit" class="btn-pill btn-primary">搜索</button>
+    </form>
+    <div class="hot" id="hotWords">
+      <span>大家在搜：</span>
+      <button type="button">周报</button>
+      <button type="button">英语口语</button>
+      <button type="button">旅行规划</button>
+      <button type="button">豆包</button>
+      <button type="button">小红书</button>
+      <button type="button">精准提问</button>
+    </div>
+    <div class="entry-grid">
+      <a class="entry" href="#/principle">
+        <span class="e-num">01</span>
+        <span class="e-icon">🧠</span>
+        <h3>基础原理</h3>
+        <p>AI 的三个天性，决定它什么时候好用、什么时候掉链子</p>
+        <span class="e-go">进入板块 →</span>
+      </a>
+      <a class="entry" href="#/mindset">
+        <span class="e-num">02</span>
+        <span class="e-icon">💡</span>
+        <h3>认知与提问</h3>
+        <p>从万能公式到精准 / 泛化检索，四级由浅入深</p>
+        <span class="e-go">进入板块 →</span>
+      </a>
+      <a class="entry" href="#/tools">
+        <span class="e-num">03</span>
+        <span class="e-icon">🧰</span>
+        <h3>主流工具</h3>
+        <p>国内外 9 个主流 AI，各就各位、官网直达</p>
+        <span class="e-go">进入板块 →</span>
+      </a>
+      <a class="entry" href="#/scenes">
+        <span class="e-num">04</span>
+        <span class="e-icon">🎯</span>
+        <h3>场景技巧</h3>
+        <p>10 个高频场景，三步套路抄了就能用</p>
+        <span class="e-go">进入板块 →</span>
+      </a>
+      <a class="entry" href="#/usekit">
+        <span class="e-num">05</span>
+        <span class="e-icon">🧭</span>
+        <h3>身份与模板</h3>
+        <p>9 种身份的第一课 + 8 个拿来即用的提示词</p>
+        <span class="e-go">进入板块 →</span>
+      </a>
+      <a class="entry" href="#/pro">
+        <span class="e-num">06</span>
+        <span class="e-icon">🚀</span>
+        <h3>高手进阶</h3>
+        <p>沉淀个人 Skill、定时任务、连接工具、自动化工作流</p>
+        <span class="e-go">进入板块 →</span>
+      </a>
+    </div>
+    <p class="home-foot">内容更新于 2026 年 10 月 · 工具排名参考 QuestMobile 数据 · 全部官网链接已逐一核验</p>
+  </div>
+</section>
+
+<!-- ================= 视图：搜索结果 ================= -->
+<section class="view" id="view-search">
+  <div class="subview">
+    <div class="wrap">
+      <div class="res-head">
+        <button class="res-back" id="resBack">← 返回首页</button>
+        <h2>「<em id="resQuery"></em>」的结果</h2>
+        <p id="resCount"></p>
+      </div>
+      <div class="res-list" id="resList"></div>
+      <div class="res-empty" id="resEmpty" style="display:none">
+        <div class="e-emoji">🔍</div>
+        <h3>没有找到相关内容</h3>
+        <p>换个说法试试，比如：周报、英语、旅行、豆包、提示词、简历</p>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- ================= 视图：01 基础原理 ================= -->
+<section class="view gray" id="view-principle">
+  <div class="subview gray">
+    <div class="wrap">
+      <div class="band-head">
+        <p class="chapter">01 · 基础原理</p>
+        <h2>先懂它三分，<br>再用它十分。</h2>
+        <p class="lede">不需要懂任何技术。理解大语言模型的三个天性，你就知道该怎么使唤它，也知道它什么时候会掉链子。</p>
+      </div>
+      <div class="metaphor">
+        <span class="m-emoji">🧠</span>
+        <p><b>它像一位「读过全网、却没出过图书馆」的实习生。</b><span>海量文本让它无所不知，但它没有你的生活、你的表格、你的客户。能力极强，前提是你得会带。</span></p>
+      </div>
+      <div class="grid-3">
+        <div class="card">
+          <span class="num">1</span>
+          <h3>它在「猜」，不在「查」</h3>
+          <p><b>机制：</b>它的原理是「预测下一个最可能的词」。它没有事实校验环节，模式拟合得越像真的，编造起来越自信——这就是「幻觉」的来源。</p>
+          <p style="margin-top:10px"><b>识别信号：</b>细节过度具体、拒绝给出出处、把推测说成定论。即便接了搜索功能的产品，也可能误用搜来的信息。</p>
+          <p class="conclusion">→ 对策：数字、法条、人名、引用，一律要它标出来源，并用搜索工具交叉验证。</p>
+        </div>
+        <div class="card">
+          <span class="num">2</span>
+          <h3>它没有你的上下文</h3>
+          <p><b>机制：</b>每次对话它都从零开始，不知道你是谁、在做什么、表格里每列是什么。你问得越抽象，它只能返回越安全的废话。</p>
+          <p style="margin-top:10px"><b>关键认知：</b>「正确的废话」不是它笨，是你没给上下文。上下文三件套：你的角色和处境、真实材料、明确约束。</p>
+          <p class="conclusion">→ 对策：把背景、材料、样例喂给它，它才能交付「你的」东西。</p>
+        </div>
+        <div class="card">
+          <span class="num">3</span>
+          <h3>它的记忆有窗口</h3>
+          <p><b>机制：</b>对话和文档都有长度上限（上下文窗口）。开头的要求会被长对话稀释，超长文档的中间章节也容易被漏读。</p>
+          <p style="margin-top:10px"><b>实用结论：</b>聊得越久越要复习约束；几十页的材料别指望它一次全消化。</p>
+          <p class="conclusion">→ 对策：重要约束重复说；长文档先让它总结、再按章节提问，或交给长文本型工具。</p>
+        </div>
+      </div>
+
+      <div class="final" style="margin-top:80px">
+        <p class="chapter">用之前 · 最后三句话</p>
+        <h2>AI 是副驾驶，<br>方向盘在你手里。</h2>
+        <p class="lede">这三条能帮你避开绝大多数麻烦。</p>
+        <div class="final-grid">
+          <div class="final-item">
+            <div class="f-emoji">🤥</div>
+            <h3>它会编，你要核</h3>
+            <p>数字、法条、人名、引用是幻觉重灾区。<b>对策：</b>关键信息要出处，用秘塔等搜索工具交叉验证。</p>
+          </div>
+          <div class="final-item">
+            <div class="f-emoji">🔒</div>
+            <h3>别把底细全交出去</h3>
+            <p>身份证、银行卡、密码、公司机密、客户信息不要输入。<b>对策：</b>涉密材料先脱敏打码。</p>
+          </div>
+          <div class="final-item">
+            <div class="f-emoji">🧠</div>
+            <h3>别让思考外包</h3>
+            <p>AI 给的是「平均偏上」的答案。<b>对策：</b>核心结论、专业意见、发出去的文字，人工终审不能省。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- ================= 视图：02 认知与提问 ================= -->
+<section class="view" id="view-mindset">
+  <div class="subview">
+    <div class="wrap">
+      <div class="band-head">
+        <p class="chapter">02 · 认知与提问</p>
+        <h2>问对问题，<br>比换工具重要十倍。</h2>
+        <p class="lede">同一件事，问法不同，结果天差地别。按下面四级循序渐进，一级比一级值钱。</p>
+      </div>
+
+      <div class="levels">
+        <div class="level">
+          <span class="lv-tag">L1 · 入门</span>
+          <h3>万能提问公式</h3>
+          <p>任何需求，按这个结构写就不至于跑偏：<b>角色 + 背景 + 任务 + 要求 + 示例</b>。</p>
+          <div class="demo" style="margin-top:18px">
+            <div class="demo-card bad">
+              <p class="demo-label">😵 没有公式</p>
+              <p>“帮我写一份周报。”</p>
+              <p class="demo-note">得到一篇正确的废话，还得大改一遍。</p>
+            </div>
+            <div class="demo-card good">
+              <p class="demo-label">✅ 套上公式</p>
+              <p>“你是我的<span class="hl hl-role">行政助理</span>。这是我本周的零散记录：<span class="hl hl-bg">完成 3 场活动、处理 2 次客诉</span>……请<span class="hl hl-task">整理成周报</span>，分成果 / 问题 / 计划三部分，<span class="hl hl-req">每条附一个数字</span>。”</p>
+              <p class="demo-note">接近能交的初稿，你只核对事实。</p>
+            </div>
+          </div>
+          <div class="lv-detail">
+            <div class="row"><b>角色：</b>让它以谁的身份回答（资深 HR / 小红书博主 / 英语教练）——决定语气和专业度。</div>
+            <div class="row"><b>背景：</b>你是谁、什么情况、给它什么材料（记录、文档、数据）——决定回答是否「属于你」。</div>
+            <div class="row"><b>任务 + 要求：</b>具体做什么、格式字数语气禁忌——决定交付物长什么样。示例可选，但给一篇范文，质量提升最明显。</div>
+          </div>
+        </div>
+
+        <div class="level">
+          <span class="lv-tag">L2 · 分类</span>
+          <h3>精准检索 与 泛化检索</h3>
+          <p>所有提问逃不出这两种。用错类型的典型后果：该具体时太抽象，得到正确的废话；该放开时条件太多，错过更好的答案。</p>
+          <div class="search-grid" style="margin-top:20px">
+            <div class="search-card">
+              <span class="s-tag precise">🎯 精准检索</span>
+              <h3>你已经知道要什么</h3>
+              <p class="s-when">适用于：写代码、写公式、改文案、按格式产出等目标明确的场景。</p>
+              <ul class="s-points">
+                <li>目标说到最小单位，一次只布置一件事</li>
+                <li>给全条件：对象、背景、材料、约束</li>
+                <li>指定交付格式：字数、结构、语气、禁忌</li>
+              </ul>
+              <div class="s-example good"><span class="tag">✓ 这样问</span>「用 pandas 按部门汇总销售额并算占比，我的表 A 列姓名 B 列部门 C 列金额。给可直接运行的公式，并逐段解释。」</div>
+              <div class="s-example bad"><span class="tag">✗ 反例</span>「Excel 怎么弄啊？」——条件太少，只能得到教科书式回答。</div>
+            </div>
+            <div class="search-card">
+              <span class="s-tag broad">🌊 泛化检索</span>
+              <h3>你还在探索方向</h3>
+              <p class="s-when">适用于：选题、起名、方案发散、旅行规划、不知道有什么可能的时候。</p>
+              <ul class="s-points">
+                <li>只给方向，不设死条件，让它先给可能性</li>
+                <li>要「选项」不要「答案」，要求给不同风格</li>
+                <li>明确说「先别考虑可行性， brainstorm 阶段」</li>
+              </ul>
+              <div class="s-example good"><span class="tag">✓ 这样问</span>「周末想去京都两天，喜欢小众、Local 美食、不赶景点。先给我 3 种完全不同风格的玩法方向，每种两三句话。」</div>
+              <div class="s-example bad"><span class="tag">✗ 反例</span>「给我京都行程」——条件太少，得到千人一面的大众游记。</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="level">
+          <span class="lv-tag">L3 · 打磨</span>
+          <h3>多轮迭代：把它当实习生带</h3>
+          <p>第一版不满意是常态，不是失败。高手和新手的差别，在于会不会用「追加指令」反复打磨。下面是可以直接套用的话术库：</p>
+          <div class="lv-detail">
+            <div class="row"><b>调长度：</b><code>太长了，压缩到 300 字以内</code> ／ <code>第二段展开讲，每段给一个例子</code></div>
+            <div class="row"><b>调语气：</b><code>换个更委婉 / 更强势 / 更口语化的说法</code> ／ <code>像跟朋友聊天那样写</code></div>
+            <div class="row"><b>要选项：</b><code>给 3 个不同风格的版本，并说明各自适用场景</code></div>
+            <div class="row"><b>让它先要材料：</b><code>先别写。告诉我你需要我提供什么信息，才能写好这份方案</code>——这一句能避免大量返工。</div>
+            <div class="row"><b>挑错：</b><code>以严格审稿人的角度，找出这份稿子里最弱的 3 处，并给出改法</code></div>
+          </div>
+        </div>
+
+        <div class="level">
+          <span class="lv-tag">L4 · 组合</span>
+          <h3>先泛后精 + 工作流思维</h3>
+          <p>把方法串起来：复杂任务两段式提问；每天重复的事，拆成「AI 做什么、你做什么」的流水线。</p>
+          <div class="combo" style="margin-top:18px">
+            <span class="c-badge">两步法</span>
+            <div>
+              <h3>第一轮放开，第二轮收敛</h3>
+              <p><b>第一轮：</b>「 brainstorm 阶段，先给我 5 个方向，不用展开」→ 你选定方向。<br><b>第二轮：</b>「按方向 2 写，条件： audience 是……、300 字、语气……」——带着选定的方向补满条件与格式。</p>
+            </div>
+          </div>
+          <div class="lv-detail">
+            <div class="row"><b>工作流示例（会议纪要）：</b>录音转写（AI）→ 按「结论 / 待办 / 风险」提炼（AI）→ 核对事实与分寸（你）→ 发群确认（你）。</div>
+            <div class="row"><b>工作流示例（周报）：</b>每天随手记一句流水账（你）→ 周五套「周报生成器」模板（AI）→ 核对数字与表述（你）。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- ================= 视图：03 主流工具 ================= -->
+<section class="view gray" id="view-tools">
+  <div class="subview gray">
+    <div class="wrap">
+      <div class="band-head">
+        <p class="chapter">03 · 主流工具</p>
+        <h2>九个主流工具，<br>各就各位。</h2>
+        <p class="lede">格局基于 2026 年 10 月公开数据。新手不用都装：一个顺手助手 + 秘塔搜索 + 即梦出图，就够起步。国外工具需具备相应的网络条件。</p>
+      </div>
+
+      <p class="group-label">🇨🇳 国内助手</p>
+      <div class="tool-grid">
+        <div class="tool" id="tool-doubao">
+          <div class="tool-head"><span class="tool-logo">🫘</span><div><h3>豆包</h3><span class="vendor">字节跳动 · 月活约 4.2 亿</span></div></div>
+          <p class="desc">国民级助手，功能全家桶，按住就能语音提问，长辈也能用。</p>
+          <p class="fit"><b>适合：</b>日常问答、生活场景、顺手第一站</p>
+          <p class="fit"><b>上手第一步：</b>按住输入框旁的麦克风，说「帮我规划这周末去哪玩」。</p>
+          <a class="go" href="https://www.doubao.com/" target="_blank" rel="noopener">doubao.com ↗</a>
+        </div>
+        <div class="tool" id="tool-qianwen">
+          <div class="tool-head"><span class="tool-logo">🌟</span><div><h3>千问</h3><span class="vendor">阿里巴巴 · 原「通义千问」</span></div></div>
+          <p class="desc">办公套件强：AI PPT、录音纪要、网页总结，免费额度大方。</p>
+          <p class="fit"><b>适合：</b>办公、做 PPT、文档总结</p>
+          <p class="fit"><b>上手第一步：</b>输入「做一份 10 页的部门季度汇报 PPT」，看它先出大纲。</p>
+          <a class="go" href="https://www.qianwen.com/" target="_blank" rel="noopener">qianwen.com ↗</a>
+        </div>
+        <div class="tool" id="tool-deepseek">
+          <div class="tool-head"><span class="tool-logo">🐋</span><div><h3>DeepSeek</h3><span class="vendor">深度求索 · 开源顶流</span></div></div>
+          <p class="desc">「深度思考」模式下推理、数学、代码顶尖，网页极简完全免费。</p>
+          <p class="fit"><b>适合：</b>复杂分析、代码、理科讲题</p>
+          <p class="fit"><b>上手第一步：</b>勾选「深度思考」，问一道让你头疼的计算或逻辑题。</p>
+          <a class="go" href="https://www.deepseek.com/" target="_blank" rel="noopener">deepseek.com ↗</a>
+        </div>
+        <div class="tool" id="tool-yuanbao">
+          <div class="tool-head"><span class="tool-logo">💰</span><div><h3>腾讯元宝</h3><span class="vendor">腾讯 · 微信生态</span></div></div>
+          <p class="desc">能检索公众号文章，双模型可切换，找中文资料有一手。</p>
+          <p class="fit"><b>适合：</b>中文资讯、公众号内容调研</p>
+          <p class="fit"><b>上手第一步：</b>把你关心的行业关键词丢给它，对比普通搜索的结果差异。</p>
+          <a class="go" href="https://yuanbao.tencent.com/" target="_blank" rel="noopener">yuanbao.tencent.com ↗</a>
+        </div>
+        <div class="tool" id="tool-kimi">
+          <div class="tool-head"><span class="tool-logo">🌙</span><div><h3>Kimi</h3><span class="vendor">月之暗面</span></div></div>
+          <p class="desc">超长文本之王，一次吞下几百页合同或论文，联网搜索也在第一梯队。</p>
+          <p class="fit"><b>适合：</b>长文档速读、合同论文</p>
+          <p class="fit"><b>上手第一步：</b>把一份几十页的 PDF 拖进对话框，问「这份文件的核心结论和风险点」。</p>
+          <a class="go" href="https://www.kimi.com/" target="_blank" rel="noopener">kimi.com ↗</a>
+        </div>
+        <div class="tool" id="tool-yiyan">
+          <div class="tool-head"><span class="tool-logo">📕</span><div><h3>文心一言</h3><span class="vendor">百度 · App 名「文小言」</span></div></div>
+          <p class="desc">老牌中文助手，打通搜索生态，知识问答与图文创作稳定。</p>
+          <p class="fit"><b>适合：</b>中文知识问答、图文创作</p>
+          <p class="fit"><b>上手第一步：</b>问一个百科向问题，再追问「这个说法的出处是哪里」。</p>
+          <a class="go" href="https://yiyan.baidu.com/" target="_blank" rel="noopener">yiyan.baidu.com ↗</a>
+        </div>
+      </div>
+
+      <p class="group-label">🌐 国外助手（需国际网络）</p>
+      <div class="tool-grid">
+        <div class="tool" id="tool-chatgpt">
+          <div class="tool-head"><span class="tool-logo">💬</span><div><h3>ChatGPT</h3><span class="vendor">OpenAI · 行业标杆</span></div></div>
+          <p class="desc">综合能力标杆，生态最全，适合作为「第二意见」来源。</p>
+          <p class="fit"><b>适合：</b>创意写作、代码、综合问答</p>
+          <p class="fit"><b>上手第一步：</b>把同一个问题分别问它和国产助手，对比答案差异。</p>
+          <a class="go" href="https://chatgpt.com/" target="_blank" rel="noopener">chatgpt.com ↗</a>
+        </div>
+        <div class="tool" id="tool-claude">
+          <div class="tool-head"><span class="tool-logo">🧠</span><div><h3>Claude</h3><span class="vendor">Anthropic</span></div></div>
+          <p class="desc">长文写作、代码审查口碑极佳，回答严谨，像请了位认真的专家。</p>
+          <p class="fit"><b>适合：</b>长文写作、文档分析、代码审查</p>
+          <p class="fit"><b>上手第一步：</b>上传一份长文档，让它「先总结，再按章节回答我的后续提问」。</p>
+          <a class="go" href="https://claude.ai/" target="_blank" rel="noopener">claude.ai ↗</a>
+        </div>
+        <div class="tool" id="tool-gemini">
+          <div class="tool-head"><span class="tool-logo">✨</span><div><h3>Gemini</h3><span class="vendor">Google</span></div></div>
+          <p class="desc">与谷歌搜索打通，长上下文与多模态强，查资料翻译都顺手。</p>
+          <p class="fit"><b>适合：</b>资料检索、翻译、视频理解</p>
+          <p class="fit"><b>上手第一步：</b>问一个时效性问题（如近期新闻），看它如何引用来源。</p>
+          <a class="go" href="https://gemini.google.com/" target="_blank" rel="noopener">gemini.google.com ↗</a>
+        </div>
+      </div>
+
+      <div class="vert-line">
+        <b>🔧 垂直工具按需取用：</b>
+        <span>调研搜索 → <a href="https://metaso.cn/" target="_blank" rel="noopener">秘塔</a>（无广告、答案带来源）</span>
+        <span>AI 出图 → <a href="https://jimeng.jianying.com/" target="_blank" rel="noopener">即梦</a></span>
+        <span>AI 视频 → <a href="https://klingai.kuaishou.com/" target="_blank" rel="noopener">可灵</a></span>
+        <span>多模型对比 → <a href="https://www.n.cn/" target="_blank" rel="noopener">纳米AI</a></span>
+      </div>
+      <p class="res-line">想系统练提问：<a href="https://learnprompting.org/zh-Hans/" target="_blank" rel="noopener">Learn Prompting 中文站</a> · <a href="https://api-docs.deepseek.com/zh-cn/prompt-library/" target="_blank" rel="noopener">DeepSeek 官方提示词库</a> · <a href="https://support.claude.com/" target="_blank" rel="noopener">Claude 帮助中心</a></p>
+    </div>
+  </div>
+</section>
+<!-- ================= 视图：04 场景技巧 ================= -->
+<section class="view" id="view-scenes">
+  <div class="subview">
+    <div class="wrap">
+      <div class="band-head">
+        <p class="chapter">04 · 场景技巧</p>
+        <h2>十个高频场景，<br>抄作业就行。</h2>
+        <p class="lede">每个场景拆成三步：准备材料 → 怎么说 → 怎么收尾。今天只挑一个你真正要用的跑通，比收藏十个都有用。</p>
+      </div>
+      <div class="seg-wrap">
+        <div class="seg" id="sceneSeg">
+          <button class="active" data-filter="work">💼 工作<span class="cnt">4</span></button>
+          <button data-filter="learn">📖 学习<span class="cnt">2</span></button>
+          <button data-filter="life">🏠 生活<span class="cnt">2</span></button>
+          <button data-filter="create">🎨 创作<span class="cnt">2</span></button>
+        </div>
+      </div>
+      <div class="scene-grid" id="sceneGrid">
+
+        <article class="scene" data-cat="work" id="scene-weekly">
+          <div class="scene-top"><span class="scene-icon">📋</span><h3>周报日报生成</h3></div>
+          <p>一周的流水账丢给 AI，30 秒出结构化周报，你只核对数字。</p>
+          <ul class="scene-steps">
+            <li><span class="step-n">1</span><span>平时随手记：每天一句话流水账（甚至语音转文字），周五集中处理。</span></li>
+            <li><span class="step-n">2</span><span>打开「身份与模板」板块，复制「周报生成器」模板，把方括号换成你的记录。</span></li>
+            <li><span class="step-n">3</span><span>核对成果数字、删掉它替你编的内容，再微调语气提交。</span></li>
+          </ul>
+          <p class="scene-tip"><b>注意：</b>记录里没有的信息它会补全——凡是你不确定的「事实」，一律删掉或改对。</p>
+          <div class="scene-foot"><span class="scene-tools"><a href="https://www.doubao.com/" target="_blank" rel="noopener">豆包</a> · <a href="https://www.kimi.com/" target="_blank" rel="noopener">Kimi</a></span><a class="tpl-link" href="#/usekit">用模板 →</a></div>
+        </article>
+
+        <article class="scene" data-cat="work" id="scene-email">
+          <div class="scene-top"><span class="scene-icon">✉️</span><h3>邮件消息润色</h3></div>
+          <p>催办、拒绝、道歉拿不准语气？让它一次出委婉 / 直接 / 带替代方案三版。</p>
+          <ul class="scene-steps">
+            <li><span class="step-n">1</span><span>把想说的原话直接贴给它，不用管语法和顺序。</span></li>
+            <li><span class="step-n">2</span><span>说清三件事：收件人是谁、你的目的、希望的语气（礼貌坚定 / 委婉 / 正式）。</span></li>
+            <li><span class="step-n">3</span><span>三版对比后挑一版，再让它「压缩到 200 字」或「结尾加一句明确的截止时间」。</span></li>
+          </ul>
+          <p class="scene-tip"><b>注意：</b>涉及承诺、赔款、法律措辞的邮件，AI 只能改语气，实质内容自己把关。</p>
+          <div class="scene-foot"><span class="scene-tools"><a href="https://www.doubao.com/" target="_blank" rel="noopener">豆包</a> · <a href="https://www.qianwen.com/" target="_blank" rel="noopener">千问</a></span><a class="tpl-link" href="#/usekit">用模板 →</a></div>
+        </article>
+
+        <article class="scene" data-cat="work" id="scene-ppt">
+          <div class="scene-top"><span class="scene-icon">📊</span><h3>PPT 快速成型</h3></div>
+          <p>输入主题，AI 先出大纲再逐页写内容，配合一键 PPT 功能出成品。</p>
+          <ul class="scene-steps">
+            <li><span class="step-n">1</span><span>先自己用三句话说清：这份 PPT 给谁看、要促成什么决定、放什么数据。</span></li>
+            <li><span class="step-n">2</span><span>让 AI 按「结论先行」出 10 页大纲，你删减排序（结构必须你来定）。</span></li>
+            <li><span class="step-n">3</span><span>确认后逐页生成文案；千问 / Kimi 可一键出 PPT 初稿，再进 PowerPoint 精修。</span></li>
+          </ul>
+          <p class="scene-tip"><b>注意：</b>AI 会把平淡的内容排得很漂亮——先审逻辑，再管美观。</p>
+          <div class="scene-foot"><span class="scene-tools"><a href="https://www.qianwen.com/" target="_blank" rel="noopener">千问</a> · <a href="https://www.kimi.com/" target="_blank" rel="noopener">Kimi</a></span><a class="tpl-link" href="#/tools">看工具 →</a></div>
+        </article>
+
+        <article class="scene" data-cat="work" id="scene-excel">
+          <div class="scene-top"><span class="scene-icon">📈</span><h3>Excel 数据处理</h3></div>
+          <p>不会的公式直接问，数据清洗思路让它一步步教，顺便讲清每段含义。</p>
+          <ul class="scene-steps">
+            <li><span class="step-n">1</span><span>把表格结构讲清楚：哪列是什么、有没有合并单元格、数据从第几行开始。</span></li>
+            <li><span class="step-n">2</span><span>说清目标（如「按部门汇总并算占比」），要「公式 + 逐段解释」，别只抄答案。</span></li>
+            <li><span class="step-n">3</span><span>公式报错就把错误信息原样贴回去，让它改；同时问「有没有更简单的做法」。</span></li>
+          </ul>
+          <p class="scene-tip"><b>注意：</b>拿到公式先在副本上试跑，确认无误再覆盖原表。</p>
+          <div class="scene-foot"><span class="scene-tools"><a href="https://www.deepseek.com/" target="_blank" rel="noopener">DeepSeek</a> · <a href="https://www.doubao.com/" target="_blank" rel="noopener">豆包</a></span><a class="tpl-link" href="#/usekit">用模板 →</a></div>
+        </article>
+
+        <article class="scene" data-cat="learn" id="scene-english" hidden>
+          <div class="scene-top"><span class="scene-icon">🗣️</span><h3>英语口语陪练</h3></div>
+          <p>让 AI 当外教：随时开口，每轮纠正语法、给出更地道的表达。</p>
+          <ul class="scene-steps">
+            <li><span class="step-n">1</span><span>复制「英语口语教练」模板，把话题和水平（如雅思 6 分）换成你的。</span></li>
+            <li><span class="step-n">2</span><span>全程只回英语，卡住时可以用中文说「这个词怎么说」。</span></li>
+            <li><span class="step-n">3</span><span>每轮它纠错后，把正确表达跟读三遍；一周后让它总结你的高频错误。</span></li>
+          </ul>
+          <p class="scene-tip"><b>注意：</b>它的发音示范依赖语音朗读功能，跟读后最好录下来自己对比。</p>
+          <div class="scene-foot"><span class="scene-tools"><a href="https://www.doubao.com/" target="_blank" rel="noopener">豆包</a> · <a href="https://chatgpt.com/" target="_blank" rel="noopener">ChatGPT</a></span><a class="tpl-link" href="#/usekit">用模板 →</a></div>
+        </article>
+
+        <article class="scene" data-cat="learn" id="scene-paper" hidden>
+          <div class="scene-top"><span class="scene-icon">📚</span><h3>论文文献速读</h3></div>
+          <p>上传 PDF，四问读懂一篇论文，还能结合你的研究方向追问答疑。</p>
+          <ul class="scene-steps">
+            <li><span class="step-n">1</span><span>把论文 PDF 拖进长文本型工具（Kimi / 智谱清言），先让它按「问题 / 方法 / 结论 / 局限」总结。</span></li>
+            <li><span class="step-n">2</span><span>带着总结追问：这个方法的局限在哪？结论适用于什么场景？</span></li>
+            <li><span class="step-n">3</span><span>最后问「对我的启发：我的研究方向是 X」——把信息转成自己的东西。</span></li>
+          </ul>
+          <p class="scene-tip"><b>注意：</b>它可能漏读中间章节，关键数据回原文核对；引用论文请勿照抄它的转述。</p>
+          <div class="scene-foot"><span class="scene-tools"><a href="https://www.kimi.com/" target="_blank" rel="noopener">Kimi</a> · <a href="https://chatglm.cn/" target="_blank" rel="noopener">智谱清言</a></span><a class="tpl-link" href="#/usekit">用模板 →</a></div>
+        </article>
+
+        <article class="scene" data-cat="life" id="scene-travel" hidden>
+          <div class="scene-top"><span class="scene-icon">🧳</span><h3>旅行规划</h3></div>
+          <p>给出目的地、天数、预算和偏好，拿到具体到交通与花费的行程，还能随时调整。</p>
+          <ul class="scene-steps">
+            <li><span class="step-n">1</span><span>把约束条件一次说全：谁去、几天、人均预算、偏好、雷区（如「不赶景点」）。</span></li>
+            <li><span class="step-n">2</span><span>要「按天的行程 + 交通方式 + 预计花费」三件套，再让它补小众推荐。</span></li>
+            <li><span class="step-n">3</span><span>逐天审，不顺的直接说「第二天太满，减一个景点，换成逛街」。</span></li>
+          </ul>
+          <p class="scene-tip"><b>注意：</b>店家和票价可能过时或不属实，预定前用官方渠道二次确认。</p>
+          <div class="scene-foot"><span class="scene-tools"><a href="https://www.doubao.com/" target="_blank" rel="noopener">豆包</a> · <a href="https://gemini.google.com/" target="_blank" rel="noopener">Gemini</a></span><a class="tpl-link" href="#/usekit">用模板 →</a></div>
+        </article>
+
+        <article class="scene" data-cat="life" id="scene-recipe" hidden>
+          <div class="scene-top"><span class="scene-icon">🍳</span><h3>冰箱清理食谱</h3></div>
+          <p>报上现有食材和厨具，出几道 30 分钟能上桌的家常菜，步骤细到不用动脑。</p>
+          <ul class="scene-steps">
+            <li><span class="step-n">1</span><span>列出手头食材、厨具、忌口；顺手拍张冰箱照片给它（支持识图的工具可以直接看）。</span></li>
+            <li><span class="step-n">2</span><span>要「3 道菜 + 详细步骤 + 火候时间」，并指定至少 2 道用掉大部分食材。</span></li>
+            <li><span class="step-n">3</span><span>做完把问题反馈给它：「第二步按你说的糊锅了，哪里不对？」——下次更准。</span></li>
+          </ul>
+          <p class="scene-tip"><b>注意：</b>生熟、相克、过敏原它可能说错，海鲜和野生菌务必自己确认。</p>
+          <div class="scene-foot"><span class="scene-tools"><a href="https://www.doubao.com/" target="_blank" rel="noopener">豆包</a> · <a href="https://www.qianwen.com/" target="_blank" rel="noopener">千问</a></span><a class="tpl-link" href="#/usekit">用模板 →</a></div>
+        </article>
+
+        <article class="scene" data-cat="create" id="scene-rednote" hidden>
+          <div class="scene-top"><span class="scene-icon">📕</span><h3>小红书爆款笔记</h3></div>
+          <p>标题、正文、标签一次到位，还能指定「闺蜜分享感」「专业测评感」等语气。</p>
+          <ul class="scene-steps">
+            <li><span class="step-n">1</span><span>给它产品/主题 + 目标人群 + 你的真实使用感受（细节越真越像人写的）。</span></li>
+            <li><span class="step-n">2</span><span>要「3 个备选标题 + 500 字正文 + 标签」，指定人设风格。</span></li>
+            <li><span class="step-n">3</span><span>挑一版让它「去掉 AI 味」，再替换成你自己的真实细节，最后人工读一遍。</span></li>
+          </ul>
+          <p class="scene-tip"><b>注意：</b>平台对纯 AI 内容有限流，务必注入真实体验；功效宣传遵守广告法。</p>
+          <div class="scene-foot"><span class="scene-tools"><a href="https://www.doubao.com/" target="_blank" rel="noopener">豆包</a> · <a href="https://claude.ai/" target="_blank" rel="noopener">Claude</a></span><a class="tpl-link" href="#/usekit">用模板 →</a></div>
+        </article>
+
+        <article class="scene" data-cat="create" id="scene-video" hidden>
+          <div class="scene-top"><span class="scene-icon">🎬</span><h3>短视频脚本</h3></div>
+          <p>3 秒钩子、信息点、行动号召，按镜头写台词，不再对着空白文档发呆。</p>
+          <ul class="scene-steps">
+            <li><span class="step-n">1</span><span>给主题和时长，要求「前 3 秒钩子 + 3 个信息点 + 结尾 CTA」的表格脚本。</span></li>
+            <li><span class="step-n">2</span><span>让它顺一遍台词口语化：「像跟朋友说话那样改，删掉书面语」。</span></li>
+            <li><span class="step-n">3</span><span>拍摄时用脚本当提词器；发布后把播放数据反馈给它，让它分析哪句留住了人。</span></li>
+          </ul>
+          <p class="scene-tip"><b>注意：</b>钩子别夸大其词，标题党会被平台限流也会掉口碑。</p>
+          <div class="scene-foot"><span class="scene-tools"><a href="https://www.doubao.com/" target="_blank" rel="noopener">豆包</a> · <a href="https://www.qianwen.com/" target="_blank" rel="noopener">千问</a></span><a class="tpl-link" href="#/usekit">用模板 →</a></div>
+        </article>
+
+      </div>
+    </div>
+  </div>
+</section>
+<!-- ================= 视图：05 身份与模板 ================= -->
+<section class="view gray" id="view-usekit">
+  <div class="subview gray">
+    <div class="wrap">
+      <div class="band-head">
+        <p class="chapter">05 · 对号入座 & 拿来就用</p>
+        <h2>你的身份，<br>你的第一课。</h2>
+        <p class="lede">点开你的身份拿走「第一课」和避坑提醒；模板区的提示词，复制后把方括号内容换成你的，直接发给 AI。</p>
+      </div>
+
+      <h3 class="sub-head">🧭 身份速查 · 点开看你的第一课</h3>
+      <div class="idlist">
+        <details class="idrow">
+          <summary><span class="id-emoji">🎓</span>大学生 / 研究生<span class="id-kick">展开 ▾</span></summary>
+          <div class="idbody">
+            <div><b>AI 能帮你：</b>论文 PDF 速读 · 雅思口语陪练 · 简历优化 · 备考出题与讲评</div>
+            <div><b>工具组合：</b>Kimi（长文档）+ DeepSeek（推理问答）+ 豆包（日常）</div>
+            <div class="first"><b>第一课：</b>把正在读的论文丢给 Kimi，让它按「问题 / 方法 / 结论 / 局限」总结，再追问一处疑点。</div>
+            <div class="warn"><b>避坑：</b>引用论文数据和结论回原文核对；用 AI 写的内容遵守学校学术规范。</div>
+          </div>
+        </details>
+        <details class="idrow">
+          <summary><span class="id-emoji">💼</span>职场新人<span class="id-kick">展开 ▾</span></summary>
+          <div class="idbody">
+            <div><b>AI 能帮你：</b>周报日报 · 邮件话术 · Excel 公式 · PPT 大纲</div>
+            <div><b>工具组合：</b>豆包（顺手）+ 千问（办公套件）</div>
+            <div class="first"><b>第一课：</b>用「周报生成器」模板写这周周报，和以前的比一比，感受差距在哪。</div>
+            <div class="warn"><b>避坑：</b>周报里的数据和功绩别让 AI 编，它补的每一句你都要能为之负责。</div>
+          </div>
+        </details>
+        <details class="idrow">
+          <summary><span class="id-emoji">🗂️</span>行政 / 人事<span class="id-kick">展开 ▾</span></summary>
+          <div class="idbody">
+            <div><b>AI 能帮你：</b>通知公文初稿 · 会议纪要 · 表格整理 · 制度草拟</div>
+            <div><b>工具组合：</b>讯飞星火（录音转写）+ 豆包（文书）</div>
+            <div class="first"><b>第一课：</b>下次开会录音，转写后让 AI 按「结论 / 待办 / 风险」出纪要，标注听不清的地方。</div>
+            <div class="warn"><b>避坑：</b>涉密会议和员工个人信息不要输入；公文格式以单位模板为准。</div>
+          </div>
+        </details>
+        <details class="idrow">
+          <summary><span class="id-emoji">👩‍🏫</span>教师<span class="id-kick">展开 ▾</span></summary>
+          <div class="idbody">
+            <div><b>AI 能帮你：</b>分层出题 · 备课资料 · 学生评语 · 家校沟通话术</div>
+            <div><b>工具组合：</b>豆包 + DeepSeek（理科讲题）</div>
+            <div class="first"><b>第一课：</b>选一个学生错误率高的知识点，让 AI 出 10 道难度递进的题并附易错点分析。</div>
+            <div class="warn"><b>避坑：</b>题目的答案和解析必须自己验算；评语涉及具体学生时脱敏。</div>
+          </div>
+        </details>
+        <details class="idrow">
+          <summary><span class="id-emoji">💻</span>程序员<span class="id-kick">展开 ▾</span></summary>
+          <div class="idbody">
+            <div><b>AI 能帮你：</b>报错排查 · 代码生成与审查 · 读陌生代码库 · 写注释测试</div>
+            <div><b>工具组合：</b>Claude / DeepSeek + GitHub Copilot</div>
+            <div class="first"><b>第一课：</b>把最近的报错栈贴给 AI，先要「三种可能的排查思路」，最后才要答案。</div>
+            <div class="warn"><b>避坑：</b>别把公司代码、密钥、客户数据贴进公开工具；生成的代码当审查对象，不当免检产品。</div>
+          </div>
+        </details>
+        <details class="idrow">
+          <summary><span class="id-emoji">🎨</span>设计师<span class="id-kick">展开 ▾</span></summary>
+          <div class="idbody">
+            <div><b>AI 能帮你：</b>灵感发散 · AI 配图海报 · 方案文案 · 客户沟通话术</div>
+            <div><b>工具组合：</b>即梦（出图）+ Claude / 豆包（文案）</div>
+            <div class="first"><b>第一课：</b>把项目主题写成画面描述（主体 + 风格 + 色调），用即梦生成 4 张灵感图。</div>
+            <div class="warn"><b>避坑：</b>商用稿件注意生成图版权与风格侵权风险；交客户前人工精修。</div>
+          </div>
+        </details>
+        <details class="idrow">
+          <summary><span class="id-emoji">📣</span>销售 / 市场<span class="id-kick">展开 ▾</span></summary>
+          <div class="idbody">
+            <div><b>AI 能帮你：</b>客户行业调研 · 方案初稿 · 异议应对话术 · 活动策划</div>
+            <div><b>工具组合：</b>秘塔（调研）+ 元宝（公众号情报）+ 千问（方案）</div>
+            <div class="first"><b>第一课：</b>用秘塔把正在跟的客户行业调研一遍（现状 / 数据 / 趋势），10 分钟出底稿。</div>
+            <div class="warn"><b>避坑：</b>报价与合同条款别让 AI 起草后直接发；客户商机密信息脱敏。</div>
+          </div>
+        </details>
+        <details class="idrow">
+          <summary><span class="id-emoji">🏪</span>个体户 / 小生意<span class="id-kick">展开 ▾</span></summary>
+          <div class="idbody">
+            <div><b>AI 能帮你：</b>菜单海报文案 · 电商详情页 · 客服话术 · 记账分析</div>
+            <div><b>工具组合：</b>豆包（全能）+ 即梦（海报图）+ 元宝（找趋势）</div>
+            <div class="first"><b>第一课：</b>让 AI 写 5 条本周促销朋友圈，挑一条改改就发，对比平时数据。</div>
+            <div class="warn"><b>避坑：</b>「最便宜」「第一」这类绝对化用语违反广告法，让 AI 写完后自己再过一遍。</div>
+          </div>
+        </details>
+        <details class="idrow">
+          <summary><span class="id-emoji">👵</span>父母长辈<span class="id-kick">展开 ▾</span></summary>
+          <div class="idbody">
+            <div><b>AI 能帮你：</b>手机使用答疑 · 养生谣言辨别 · 说明书人话版 · 出行规划</div>
+            <div><b>工具组合：</b>豆包（按住语音提问）+ 元宝</div>
+            <div class="first"><b>第一课：</b>帮爸妈装好豆包，教他们「按住蓝色按钮说话」提问，从「这个药说明书写的啥意思」开始。</div>
+            <div class="warn"><b>避坑：</b>健康类问题只能当科普，拿不准一律去医院；别让老人按 AI 建议自行调药。</div>
+          </div>
+        </details>
+      </div>
+
+      <h3 class="sub-head" style="margin-top:72px">🧰 提示词模板 · 复制就能用</h3>
+      <p class="tpl-note">模板里带【】和方括号的是「占位符」，换成你的信息即可；后面跟着的「怎么改」是最容易被忽略的要点。</p>
+      <div class="tpl-grid">
+        <div class="tpl">
+          <div class="tpl-head"><h3>🧰 周报生成器</h3><span class="tpl-chip chip-work">职场</span></div>
+          <p class="tpl-usage">怎么改：【我的记录】换成你的流水账；成果要带数字，方便它量化。</p>
+          <pre id="tpl-01">你是我的行政助理。下面是我本周工作的零散记录，请整理成一份可以直接提交的周报。
+【我的记录】
+[粘贴你的流水账记录]
+【输出要求】
+1. 分三部分：本周重点工作 / 问题与风险 / 下周计划
+2. 重点工作按重要性排序，每条尽量带一个数字结果
+3. 语气专业简洁，不要形容词堆砌
+4. 记录里没有的信息不要编造，缺的标出来问我</pre>
+          <button class="copy-btn" data-tpl="tpl-01">📋 一键复制</button>
+        </div>
+        <div class="tpl">
+          <div class="tpl-head"><h3>✉️ 邮件润色</h3><span class="tpl-chip chip-work">职场</span></div>
+          <p class="tpl-usage">怎么改：【背景】三件事说清楚，它才知道该委婉还是该强硬。</p>
+          <pre id="tpl-02">请把下面这段话改写成专业的商务邮件。
+【原文】[粘贴原文]
+【背景】收件人是[客户/领导/同事]，我的目的是[催办/拒绝/道歉/请求支持]，希望语气[礼貌坚定/委婉/正式]
+【要求】300字以内；给出三个版本：委婉版、直接版、带替代方案版；结尾必须有明确的行动要求和截止时间</pre>
+          <button class="copy-btn" data-tpl="tpl-02">📋 一键复制</button>
+        </div>
+        <div class="tpl">
+          <div class="tpl-head"><h3>📈 Excel 公式生成</h3><span class="tpl-chip chip-work">职场</span></div>
+          <p class="tpl-usage">怎么改：表格结构描述越准，公式越能用；最好说明数据从第几行开始。</p>
+          <pre id="tpl-03">我有一个 Excel 表格：[描述结构，例如：A列姓名、B列部门、C列销售额、D列日期]。
+我想要实现：[目标，例如：按部门汇总销售额并计算占比]。
+请给我：1）可以直接粘贴使用的公式；2）每一段的含义解释；3）如果用数据透视表更简单，告诉我在新版 Excel 里怎么操作。</pre>
+          <button class="copy-btn" data-tpl="tpl-03">📋 一键复制</button>
+        </div>
+        <div class="tpl">
+          <div class="tpl-head"><h3>🗣️ 英语口语教练</h3><span class="tpl-chip chip-learn">学习</span></div>
+          <p class="tpl-usage">怎么改：水平和话题按你的情况填；规则不满意随时追加修改。</p>
+          <pre id="tpl-04">你是我的英语口语教练。规则：
+1. 全程用英语和我对话，话题从[旅行/工作/学习]开始
+2. 我说完后，先用中文简短指出语法错误，再给出更地道的表达
+3. 然后问我一个新问题
+4. 我的水平约[雅思6分/初级]，语速放慢，用词控制在高中到四级范围
+现在开始第一个问题。</pre>
+          <button class="copy-btn" data-tpl="tpl-04">📋 一键复制</button>
+        </div>
+        <div class="tpl">
+          <div class="tpl-head"><h3>🧳 旅行规划</h3><span class="tpl-chip chip-life">生活</span></div>
+          <p class="tpl-usage">怎么改：约束给得越全，行程越省心；「不喜欢什么」和「喜欢什么」一样重要。</p>
+          <pre id="tpl-05">我和[人数/关系]想去[目的地]，玩[天数]天，人均预算[金额]，偏好[自然风光/人文/美食]，不喜欢打卡式赶路。
+请给出：
+1. 按天的行程，每天主要安排不超过3个
+2. 每天的交通方式和预计花费
+3. 2-3个本地人才去的小众推荐
+4. 需要提前预订的项目清单</pre>
+          <button class="copy-btn" data-tpl="tpl-05">📋 一键复制</button>
+        </div>
+        <div class="tpl">
+          <div class="tpl-head"><h3>🍳 冰箱清理食谱</h3><span class="tpl-chip chip-life">生活</span></div>
+          <p class="tpl-usage">怎么改：食材列得越具体越好；有忌口、过敏务必写进第一句。</p>
+          <pre id="tpl-06">我冰箱现在有：[列食材]，厨具有[炒锅/电饭煲/空气炸锅]，口味偏好[辣/清淡]，忌口[不吃香菜/无辣不欢]。
+请设计3道菜，要求：
+1. 30分钟内完成
+2. 至少2道菜用掉大部分食材
+3. 列出详细步骤，包括火候和时间
+4. 最后给一个"用现有食材还能凑出来的备选方案"</pre>
+          <button class="copy-btn" data-tpl="tpl-06">📋 一键复制</button>
+        </div>
+        <div class="tpl">
+          <div class="tpl-head"><h3>📕 小红书笔记</h3><span class="tpl-chip chip-create">创作</span></div>
+          <p class="tpl-usage">怎么改：真实体验细节是最值钱的部分，写进去 AI 味立刻少一半。</p>
+          <pre id="tpl-07">你是小红书博主。请为[产品/主题]写一篇笔记。
+【要求】
+1. 3个备选标题，带emoji，制造好奇或戳痛点
+2. 正文500字以内，口语化，有真实使用体验感
+3. 结构：开头共鸣 → 使用过程 → 效果对比 → 适合谁
+4. 结尾5个相关标签
+人设风格：[闺蜜分享/专业测评/学生党平价]</pre>
+          <button class="copy-btn" data-tpl="tpl-07">📋 一键复制</button>
+        </div>
+        <div class="tpl">
+          <div class="tpl-head"><h3>🎬 短视频脚本</h3><span class="tpl-chip chip-create">创作</span></div>
+          <p class="tpl-usage">怎么改：钩子决定完播率，可以多让它出几个备选再挑。</p>
+          <pre id="tpl-08">为[主题]写一个60秒短视频脚本。
+【要求】
+1. 前3秒必须是钩子（提问/反常识/冲突）
+2. 中间分3个信息点，每个点配画面描述和台词
+3. 结尾一句行动号召
+4. 输出成表格：镜头编号 / 画面 / 台词 / 时长</pre>
+          <button class="copy-btn" data-tpl="tpl-08">📋 一键复制</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 视图：06 高手进阶 ================= -->
+<section class="view" id="view-pro">
+  <div class="subview">
+    <div class="wrap">
+      <div class="band-head">
+        <p class="chapter">06 · 高手进阶</p>
+        <h2>从「每次手动问」，<br>到「它到点自己干」。</h2>
+        <p class="lede">前面五步让你用上 AI，这一章让你甩不开它：把经验沉淀成资产、让任务自动发生、让 AI 连接你的其它工具。按 L5 到 L9 循序渐进，不用一步到位。</p>
+      </div>
+
+      <div class="levels">
+        <div class="level">
+          <span class="lv-tag">L5 · 沉淀</span>
+          <h3>把做完的工作，逆向成你的「Skill」</h3>
+          <p>高手的标志不是问得多，而是<strong>每次都比上次省力</strong>。核心一招：当你亲手做完一件漂亮的工作，立刻让 AI 把过程拆成可复用的资产。</p>
+          <div class="lv-detail">
+            <div class="row"><b>逆向拆解话术（直接抄）：</b>「这是我刚才完成[某工作]的完整过程和思路：[粘贴过程]。请整理成一个可复用的工作模板，包含：① 输入清单（要提前准备什么）② 分步流程 ③ 常见坑与检查清单 ④ 判断标准（怎么算做好了）。以后我每次做同类工作都能直接调用。」</div>
+            <div class="row"><b>个人提示词库：</b>把验证过好用的提示词按场景归档到备忘录或笔记，每条标注「适用场景 + 要改的地方」，每周迭代一次——三个月后这就是你的私人武器库。</div>
+            <div class="row"><b>让 AI 学你的风格：</b>把 3-5 篇你的代表作喂给它，让它提炼一张「风格卡片」（常用句式、节奏、语气、禁忌词）。之后所有产出先说明「按我的风格卡片来」，越用越像你。</div>
+          </div>
+        </div>
+
+        <div class="level">
+          <span class="lv-tag">L6 · 定时</span>
+          <h3>定时任务：让 AI 到点自己开工</h3>
+          <p>适合「每周重复 3 次以上」的事。三种实现路径，由轻到重，按需选择：</p>
+          <div class="lv-detail">
+            <div class="row"><b>① 轻量（今晚就能做）：</b>手机日历/提醒 + AI 提前生成。例如周日晚上让 AI 生成本周计划草稿，周一提醒一到，你只做核对和微调。</div>
+            <div class="row"><b>② 中等（用自带能力）：</b>不少 AI 助手和办公套件已内置定时/自动化——到点执行、结果推送。典型场景：每天早上汇总行业资讯成简报、每月自动整理账单分类。</div>
+            <div class="row"><b>③ 完整（一体化工作台）：</b>在 WorkBuddy 这类平台把「获取数据 → 让 AI 总结 → 生成报告或文档」整条流程设为定时任务，到点自动跑完，你醒来直接看结果。</div>
+            <div class="row"><b>原则：</b>先自动化「你每周重复 3 次以上」的事；新流程跑通前，人工盯两次再放手。</div>
+          </div>
+        </div>
+
+        <div class="level">
+          <span class="lv-tag">L7 · 连接</span>
+          <h3>连接其它工具：从「聊天」到「做事」</h3>
+          <p>以前的 AI 只会说，现在的 AI 可以「动手」——通过连接（插件 / Agent / MCP）读写你的浏览器、邮箱、日历和文件。说人话：<strong>以前你复制粘贴给 AI，现在是 AI 自己去拿。</strong></p>
+          <div class="lv-detail">
+            <div class="row"><b>能连什么（大众版）：</b>浏览器侧边栏插件（总结当前网页、翻译、提炼要点）、云文档与表格、邮箱与日历、搜索结果。</div>
+            <div class="row"><b>上手路径：</b>① 先装一个浏览器 AI 插件，体验「总结眼前这个网页」；② 再把文档直接丢进 AI 工作台加工，不用来回复制；③ 有更深需求时，再了解 Agent 与 MCP——让 AI 按步骤自动调用多个工具的机制。</div>
+            <div class="row"><b>安全红线：</b>连接等于授权，只授权必要范围；涉及资金、对外发送、公开发布的操作，一律保留人工确认这一步。</div>
+          </div>
+        </div>
+
+        <div class="level">
+          <span class="lv-tag">L8 · 集成</span>
+          <h3>一体化工作台 & 无代码自动化</h3>
+          <p>「集合软件」的价值：对话、文档、表格、任务、定时、多模型在同一个地盘，不用在五六个 App 之间复制粘贴。</p>
+          <div class="lv-detail">
+            <div class="row"><b><a href="https://www.workbuddy.cn/" target="_blank" rel="noopener">WorkBuddy</a>：</b>AI 工作台代表——文档、表格、任务、定时自动化、多模型调用集中在一处，适合把整条工作流搬进去。</div>
+            <div class="row"><b><a href="https://www.coze.cn/" target="_blank" rel="noopener">扣子 Coze</a>：</b>不写代码搭自己的专属 Bot，配好知识和流程后反复使用。</div>
+            <div class="row"><b><a href="https://n8n.io/" target="_blank" rel="noopener">n8n</a> / <a href="https://zapier.com/" target="_blank" rel="noopener">Zapier</a> / <a href="https://www.make.com/" target="_blank" rel="noopener">Make</a>：</b>无代码把各个 App 串成流水线（如表单提交 → AI 总结 → 写入表格 → 发通知）。</div>
+            <div class="row"><b>怎么选：</b>只想办公提效 → 一体化工作台；想要专属助手 → 扣子；要把一堆 App 串起来 → n8n / Zapier。</div>
+            <div class="row"><b>大众起点：</b>在 WorkBuddy 里把「每周整理记录 → 生成周报」跑成定时任务，亲身体验一次「AI 自己干活」。</div>
+          </div>
+        </div>
+
+        <div class="level">
+          <span class="lv-tag">L9 · 组合</span>
+          <h3>多模型组合拳：没有最好，只有最合适</h3>
+          <p>高手不忠于某一个工具，而是固定一套分工流水线：</p>
+          <table class="combo-table">
+            <tr><th>环节</th><th>用什么</th><th>为什么</th></tr>
+            <tr><td>调研找料</td><td><a href="https://metaso.cn/" target="_blank" rel="noopener">秘塔</a> / <a href="https://yuanbao.tencent.com/" target="_blank" rel="noopener">元宝</a></td><td>无广告、带来源，中文资料全</td></tr>
+            <tr><td>深度分析</td><td><a href="https://www.deepseek.com/" target="_blank" rel="noopener">DeepSeek</a> / <a href="https://claude.ai/" target="_blank" rel="noopener">Claude</a></td><td>推理强、长文档稳</td></tr>
+            <tr><td>成稿润色</td><td><a href="https://claude.ai/" target="_blank" rel="noopener">Claude</a> / <a href="https://www.doubao.com/" target="_blank" rel="noopener">豆包</a></td><td>文风好、速度快</td></tr>
+            <tr><td>配图出片</td><td><a href="https://jimeng.jianying.com/" target="_blank" rel="noopener">即梦</a></td><td>中文理解好，海报插画一站搞定</td></tr>
+            <tr><td>视频生成</td><td><a href="https://klingai.kuaishou.com/" target="_blank" rel="noopener">可灵</a></td><td>图生视频质量第一梯队</td></tr>
+            <tr><td>归档复用</td><td><a href="https://www.workbuddy.cn/" target="_blank" rel="noopener">WorkBuddy</a> 等</td><td>成果变资产，定时再自动跑</td></tr>
+          </table>
+          <div class="lv-detail">
+            <div class="row"><b>原则：</b>固定你的搭配，别天天换工具；每季度按模型更新情况复审一次即可。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="combo" style="margin-top:44px">
+        <span class="c-badge">最后一课</span>
+        <div>
+          <h3>高手的标志，不是会用多少工具</h3>
+          <p>而是有多少事<b>「不用自己想起来了」</b>——因为它到点就发生。从今晚开始：挑一件你每周重复三次以上的小事，按 L5 拆成模板，按 L6 设为定时任务。这就是你的第一个自动化。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-col">
+        <p class="foot-brand">🧠 打工人的 AI 无脑教程</p>
+        <p>写给普通人的 AI 极简指南：懂原理 → 换认知 → 选工具 → 抄场景 → 拿模板，五步把 AI 变成第二双手。</p>
+      </div>
+      <div class="foot-col">
+        <strong>快速通道</strong>
+        <a href="#/principle">基础原理</a>
+        <a href="#/mindset">认知与提问</a>
+        <a href="#/tools">主流工具</a>
+        <a href="#/scenes">场景技巧</a>
+        <a href="#/usekit">身份与模板</a>
+        <a href="#/pro">高手进阶</a>
+      </div>
+      <div class="foot-col">
+        <strong>说明与声明</strong>
+        <p>1. 全部官网与教程链接于 2026-10-20 逐一核验可达；国外工具需具备相应的网络条件。</p>
+        <p>2. 工具月活数据参考 QuestMobile 2026 年 9 月榜单，为公开报道口径。</p>
+        <p>3. 本站为效率方法科普，不构成医疗、法律、投资等专业意见，请咨询持证专业人士。</p>
+      </div>
+    </div>
+    <div class="foot-bar">
+      <span>© 2026 打工人的 AI 无脑教程 · 内容更新于 2026 年 10 月</span>
+      <span>收藏一百篇教程，不如跑通一个场景</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ============ 视图路由（点击直达，不依赖锚点跳转） ============ */
+  var VIEWS = ["home","search","principle","mindset","tools","scenes","usekit","pro"];
+  var TITLES = {home:"打工人的 AI 无脑教程", search:"搜索", principle:"基础原理", mindset:"认知与提问", tools:"主流工具", scenes:"场景技巧", usekit:"身份与模板", pro:"高手进阶"};
+  var nav = document.getElementById("nav");
+  var pendingEl = null;
+
+  function parseHash(){
+    var h = location.hash || "#/home";
+    var m = h.match(/^#\/(\w+)(?:\?(.*))?$/);
+    var name = m ? m[1] : "home";
+    var q = "";
+    if(m && m[2]){
+      var kv = m[2].replace(/^q=/,"");
+      try{ q = decodeURIComponent(kv); }catch(e){ q = kv; }
+    }
+    if(VIEWS.indexOf(name) < 0) name = "home";
+    return {name:name, q:q};
+  }
+
+  function setHash(h){
+    try{ if(location.hash !== h) location.hash = h; }catch(e){}
+  }
+
+  function showView(state){
+    var name = state.name;
+    document.querySelectorAll(".view").forEach(function(v){ v.classList.remove("active"); });
+    var el = document.getElementById("view-" + name);
+    if(el) el.classList.add("active");
+    nav.classList.toggle("in-sub", name !== "home");
+    document.title = (name === "home" ? "" : TITLES[name] + " · ") + TITLES.home;
+    if(name === "search"){ runSearch(state.q); }
+    if(pendingEl){
+      var t = document.getElementById(pendingEl);
+      if(t){
+        setTimeout(function(){
+          t.scrollIntoView({behavior:"smooth", block:"center"});
+          t.classList.add("flash");
+          setTimeout(function(){ t.classList.remove("flash"); }, 2200);
+        }, 150);
+      }
+      pendingEl = null;
+    }
+    window.scrollTo(0, 0);
+    revealScan();
+  }
+
+  /* 切换视图：立即生效（纯 DOM 操作），hash 仅用于深链与浏览器前进后退 */
+  function go(view, el){
+    pendingEl = el || null;
+    showView({name:view, q:""});
+    setHash("#/" + view);
+  }
+  function goHome(){
+    showView({name:"home", q:""});
+    setHash("#/home");
+  }
+  window.addEventListener("hashchange", function(){
+    showView(parseHash());
+  });
+
+  /* 所有站内锚点统一走 go()：阻止默认跳转，直接切换视图 */
+  document.querySelectorAll('a[href^="#/"]').forEach(function(a){
+    a.addEventListener("click", function(e){
+      e.preventDefault();
+      var v = a.getAttribute("href").replace(/^#\//, "");
+      go(v, a.dataset.el || null);
+    });
+  });
+
+  /* 返回键：优先浏览器历史，异常时强制回首页 */
+  function goBack(){
+    var done = false;
+    var timer = setTimeout(function(){ if(!done) goHome(); }, 450);
+    window.addEventListener("hashchange", function once(){
+      window.removeEventListener("hashchange", once);
+      clearTimeout(timer); done = true;
+    });
+    if(history.length > 1){
+      try{ history.back(); }
+      catch(e){ clearTimeout(timer); if(!done){ done = true; goHome(); } }
+    } else {
+      clearTimeout(timer); done = true; goHome();
+    }
+  }
+  document.getElementById("navBack").addEventListener("click", goBack);
+  document.getElementById("resBack").addEventListener("click", goBack);
+
+  /* ============ 搜索 ============ */
+  var INDEX = [
+    {t:"场景", chip:"chip-scene", icon:"📋", name:"周报日报生成", kw:"周报 日报 工作汇报 总结 行政 流水账", view:"scenes", el:"scene-weekly", desc:"流水账丢给 AI，30 秒出结构化周报，你只核对数字"},
+    {t:"场景", chip:"chip-scene", icon:"✉️", name:"邮件消息润色", kw:"邮件 邮件润色 商务 催办 拒绝 道歉 话术", view:"scenes", el:"scene-email", desc:"委婉/直接/带替代方案三版一次出，挑最像你会说的话"},
+    {t:"场景", chip:"chip-scene", icon:"📊", name:"PPT 快速成型", kw:"ppt 汇报 幻灯片 大纲 演示", view:"scenes", el:"scene-ppt", desc:"AI 出 10 页大纲再逐页写文案，配合一键 PPT 出成品"},
+    {t:"场景", chip:"chip-scene", icon:"📈", name:"Excel 数据处理", kw:"excel 公式 数据 汇总 透视表 表格", view:"scenes", el:"scene-excel", desc:"公式直接问、报错贴回去，数据清洗思路一步步教"},
+    {t:"场景", chip:"chip-scene", icon:"🗣️", name:"英语口语陪练", kw:"英语 口语 外教 雅思 英语口语 陪练 纠错", view:"scenes", el:"scene-english", desc:"随时开口对话，每轮纠正语法、给出更地道的表达"},
+    {t:"场景", chip:"chip-scene", icon:"📚", name:"论文文献速读", kw:"论文 文献 pdf 速读 学术 研究", view:"scenes", el:"scene-paper", desc:"上传 PDF 四问读懂论文，还能结合你的方向追问"},
+    {t:"场景", chip:"chip-scene", icon:"🧳", name:"旅行规划", kw:"旅行 旅游 行程 攻略 出行 度假", view:"scenes", el:"scene-travel", desc:"给全约束条件，拿到具体到交通与花费的行程"},
+    {t:"场景", chip:"chip-scene", icon:"🍳", name:"冰箱清理食谱", kw:"食谱 做饭 菜谱 食材 冰箱 吃什么", view:"scenes", el:"scene-recipe", desc:"报上现有食材和厨具，出 30 分钟能上桌的家常菜"},
+    {t:"场景", chip:"chip-scene", icon:"📕", name:"小红书爆款笔记", kw:"小红书 笔记 文案 种草 爆款 自媒体", view:"scenes", el:"scene-rednote", desc:"标题、正文、标签一次到位，可指定人设语气"},
+    {t:"场景", chip:"chip-scene", icon:"🎬", name:"短视频脚本", kw:"短视频 脚本 口播 视频 抖音 分镜", view:"scenes", el:"scene-video", desc:"3 秒钩子+信息点+行动号召，按镜头写台词"},
+    {t:"工具", chip:"chip-tool", icon:"🫘", name:"豆包", kw:"豆包 doubao 字节 助手", view:"tools", el:"tool-doubao", desc:"国民级助手，功能全家桶，按住就能语音提问"},
+    {t:"工具", chip:"chip-tool", icon:"🌟", name:"千问", kw:"千问 通义 qwen 阿里 通义千问", view:"tools", el:"tool-qianwen", desc:"原通义千问，办公套件强：AI PPT、录音纪要、网页总结"},
+    {t:"工具", chip:"chip-tool", icon:"🐋", name:"DeepSeek", kw:"deepseek 深度求索 推理 代码 开源", view:"tools", el:"tool-deepseek", desc:"深度思考模式推理、数学、代码顶尖，完全免费"},
+    {t:"工具", chip:"chip-tool", icon:"💰", name:"腾讯元宝", kw:"元宝 腾讯 yuanbao 微信 公众号", view:"tools", el:"tool-yuanbao", desc:"能检索公众号文章，双模型可切换，找中文资料"},
+    {t:"工具", chip:"chip-tool", icon:"🌙", name:"Kimi", kw:"kimi 月之暗面 长文本 长文档", view:"tools", el:"tool-kimi", desc:"超长文本之王，一次吞下几百页合同或论文"},
+    {t:"工具", chip:"chip-tool", icon:"📕", name:"文心一言", kw:"文心一言 文小言 百度", view:"tools", el:"tool-yiyan", desc:"老牌中文助手，打通搜索生态，知识问答稳定"},
+    {t:"工具", chip:"chip-tool", icon:"💬", name:"ChatGPT", kw:"chatgpt openai gpt", view:"tools", el:"tool-chatgpt", desc:"全球标杆，生态最全，适合作为第二意见来源"},
+    {t:"工具", chip:"chip-tool", icon:"🧠", name:"Claude", kw:"claude anthropic 写作 代码", view:"tools", el:"tool-claude", desc:"长文写作、代码审查口碑极佳，回答像认真的专家"},
+    {t:"工具", chip:"chip-tool", icon:"✨", name:"Gemini", kw:"gemini google 谷歌 搜索", view:"tools", el:"tool-gemini", desc:"与谷歌搜索打通，长上下文与多模态强"},
+    {t:"工具", chip:"chip-tool", icon:"🔎", name:"秘塔AI搜索", kw:"秘塔 搜索 metaso 调研 无广告", view:"tools", el:null, desc:"没有广告的搜索，答案带引用来源，调研第一站", link:["https://metaso.cn/","metaso.cn ↗"]},
+    {t:"工具", chip:"chip-tool", icon:"🌈", name:"即梦AI", kw:"即梦 出图 绘画 海报 jimeng", view:"tools", el:null, desc:"中文理解好的 AI 绘画与视频工具", link:["https://jimeng.jianying.com/","jimeng.jianying.com ↗"]},
+    {t:"工具", chip:"chip-tool", icon:"🎞️", name:"可灵AI", kw:"可灵 视频 kling 快手", view:"tools", el:null, desc:"AI 视频生成头部，图生视频质量高", link:["https://klingai.kuaishou.com/","klingai.kuaishou.com ↗"]},
+    {t:"模板", chip:"chip-tpl", icon:"🧰", name:"周报生成器", kw:"周报 模板 提示词 生成器", view:"usekit", el:"tpl-01", desc:"流水账进去，结构化周报出来", copy:"你是我的行政助理。下面是我本周工作的零散记录，请整理成一份可以直接提交的周报。\n【我的记录】\n[粘贴你的流水账记录]\n【输出要求】\n1. 分三部分：本周重点工作 / 问题与风险 / 下周计划\n2. 重点工作按重要性排序，每条尽量带一个数字结果\n3. 语气专业简洁，不要形容词堆砌\n4. 记录里没有的信息不要编造，缺的标出来问我"},
+    {t:"模板", chip:"chip-tpl", icon:"✉️", name:"邮件润色", kw:"邮件 模板 提示词 润色", view:"usekit", el:"tpl-02", desc:"委婉/直接/替代方案三版一次出", copy:"请把下面这段话改写成专业的商务邮件。\n【原文】[粘贴原文]\n【背景】收件人是[客户/领导/同事]，我的目的是[催办/拒绝/道歉/请求支持]，希望语气[礼貌坚定/委婉/正式]\n【要求】300字以内；给出三个版本：委婉版、直接版、带替代方案版；结尾必须有明确的行动要求和截止时间"},
+    {t:"模板", chip:"chip-tpl", icon:"📈", name:"Excel 公式生成", kw:"excel 公式 模板 提示词", view:"usekit", el:"tpl-03", desc:"要公式也要讲解，报错还能贴回去改", copy:"我有一个 Excel 表格：[描述结构，例如：A列姓名、B列部门、C列销售额、D列日期]。\n我想要实现：[目标，例如：按部门汇总销售额并计算占比]。\n请给我：1）可以直接粘贴使用的公式；2）每一段的含义解释；3）如果用数据透视表更简单，告诉我在新版 Excel 里怎么操作。"},
+    {t:"模板", chip:"chip-tpl", icon:"🗣️", name:"英语口语教练", kw:"英语 口语 模板 提示词 外教", view:"usekit", el:"tpl-04", desc:"全程英语对话，每轮纠错 + 地道表达", copy:"你是我的英语口语教练。规则：\n1. 全程用英语和我对话，话题从[旅行/工作/学习]开始\n2. 我说完后，先用中文简短指出语法错误，再给出更地道的表达\n3. 然后问我一个新问题\n4. 我的水平约[雅思6分/初级]，语速放慢，用词控制在高中到四级范围\n现在开始第一个问题。"},
+    {t:"模板", chip:"chip-tpl", icon:"🧳", name:"旅行规划", kw:"旅行 模板 提示词 行程", view:"usekit", el:"tpl-05", desc:"按天行程 + 交通 + 花费 + 小众推荐", copy:"我和[人数/关系]想去[目的地]，玩[天数]天，人均预算[金额]，偏好[自然风光/人文/美食]，不喜欢打卡式赶路。\n请给出：\n1. 按天的行程，每天主要安排不超过3个\n2. 每天的交通方式和预计花费\n3. 2-3个本地人才去的小众推荐\n4. 需要提前预订的项目清单"},
+    {t:"模板", chip:"chip-tpl", icon:"🍳", name:"冰箱清理食谱", kw:"食谱 模板 提示词 做饭", view:"usekit", el:"tpl-06", desc:"有什么做什么，30 分钟上桌", copy:"我冰箱现在有：[列食材]，厨具有[炒锅/电饭煲/空气炸锅]，口味偏好[辣/清淡]，忌口[不吃香菜/无辣不欢]。\n请设计3道菜，要求：\n1. 30分钟内完成\n2. 至少2道菜用掉大部分食材\n3. 列出详细步骤，包括火候和时间\n4. 最后给一个\"用现有食材还能凑出来的备选方案\""},
+    {t:"模板", chip:"chip-tpl", icon:"📕", name:"小红书笔记", kw:"小红书 模板 提示词 笔记", view:"usekit", el:"tpl-07", desc:"标题正文标签一次到位，人设语气可选", copy:"你是小红书博主。请为[产品/主题]写一篇笔记。\n【要求】\n1. 3个备选标题，带emoji，制造好奇或戳痛点\n2. 正文500字以内，口语化，有真实使用体验感\n3. 结构：开头共鸣 → 使用过程 → 效果对比 → 适合谁\n4. 结尾5个相关标签\n人设风格：[闺蜜分享/专业测评/学生党平价]"},
+    {t:"模板", chip:"chip-tpl", icon:"🎬", name:"短视频脚本", kw:"短视频 脚本 模板 提示词", view:"usekit", el:"tpl-08", desc:"钩子+信息点+CTA，按镜头出表格", copy:"为[主题]写一个60秒短视频脚本。\n【要求】\n1. 前3秒必须是钩子（提问/反常识/冲突）\n2. 中间分3个信息点，每个点配画面描述和台词\n3. 结尾一句行动号召\n4. 输出成表格：镜头编号 / 画面 / 台词 / 时长"},
+    {t:"身份", chip:"chip-id", icon:"🎓", name:"大学生 / 研究生", kw:"大学生 研究生 学生 论文 留学 考研", view:"usekit", el:null, desc:"论文速读 · 口语陪练 · 简历优化 · 备考出题"},
+    {t:"身份", chip:"chip-id", icon:"💼", name:"职场新人", kw:"职场 新人 白领 周报 邮件 excel", view:"usekit", el:null, desc:"周报 · 邮件 · Excel · PPT 四大件"},
+    {t:"身份", chip:"chip-id", icon:"👩‍🏫", name:"教师", kw:"教师 老师 备课 出题 评语", view:"usekit", el:null, desc:"分层出题 · 备课资料 · 评语 · 家校沟通"},
+    {t:"身份", chip:"chip-id", icon:"💻", name:"程序员", kw:"程序员 代码 bug 开发 copilot", view:"usekit", el:null, desc:"报错排查 · 代码生成审查 · 读文档"},
+    {t:"身份", chip:"chip-id", icon:"🏪", name:"个体户 / 小生意", kw:"个体户 生意 开店 电商 促销 客服", view:"usekit", el:null, desc:"海报文案 · 详情页 · 客服话术 · 记账"},
+    {t:"身份", chip:"chip-id", icon:"👵", name:"父母长辈", kw:"父母 长辈 老人 手机 养生", view:"usekit", el:null, desc:"手机答疑 · 谣言辨别 · 出行规划"},
+    {t:"概念", chip:"chip-concept", icon:"🧠", name:"AI 为什么爱编造", kw:"原理 幻觉 编造 为什么 原理", view:"principle", el:null, desc:"它在猜不在查——没有事实校验环节，这就是幻觉的来源"},
+    {t:"概念", chip:"chip-concept", icon:"🎯", name:"精准检索", kw:"精准 提问 具体 指令 公式", view:"mindset", el:null, desc:"目标明确时：说到最小单位、给全条件、指定格式"},
+    {t:"概念", chip:"chip-concept", icon:"🌊", name:"泛化检索", kw:"泛化 提问 发散 头脑风暴 选项", view:"mindset", el:null, desc:"探索方向时：只给方向、要选项不要答案"},
+    {t:"概念", chip:"chip-concept", icon:"🔁", name:"先泛后精两段式", kw:"两段式 组合 先泛后精 工作流", view:"mindset", el:null, desc:"第一轮放开给方向，第二轮收敛补条件"},
+    {t:"概念", chip:"chip-concept", icon:"🛠️", name:"多轮打磨话术", kw:"迭代 打磨 太长 语气 修改 多轮", view:"mindset", el:null, desc:"调长度/调语气/要选项/让它先要材料——直接套用"},
+    {t:"概念", chip:"chip-concept", icon:"🔒", name:"隐私红线", kw:"隐私 安全 保密 脱敏 红线", view:"principle", el:null, desc:"身份证、银行卡、密码、公司机密不要输入"},
+    {t:"概念", chip:"chip-concept", icon:"📋", name:"工作流思维", kw:"工作流 效率 自动化 流程", view:"mindset", el:null, desc:"把重复的事拆成「AI 做什么、你做什么」"},
+    {t:"概念", chip:"chip-concept", icon:"🧩", name:"把工作逆向成 Skill / 模板", kw:"skill 模板 sop 沉淀 复用 逆向 个人提示词库", view:"pro", el:null, desc:"做完一件漂亮工作，立刻让 AI 拆成可复用资产"},
+    {t:"概念", chip:"chip-concept", icon:"⏰", name:"定时任务", kw:"定时 任务 自动 到点 提醒 计划 自动化", view:"pro", el:null, desc:"让 AI 到点自己开工：每周简报、本月账单、晨间计划"},
+    {t:"概念", chip:"chip-concept", icon:"🔌", name:"连接其它工具", kw:"连接 工具 插件 agent mcp 浏览器 邮箱 日历", view:"pro", el:null, desc:"从聊天到做事：AI 自己去拿网页、文档和邮件"},
+    {t:"概念", chip:"chip-concept", icon:"🏢", name:"WorkBuddy 一体化工作台", kw:"workbuddy 工作台 集合 集成 办公套件", view:"pro", el:null, desc:"文档、表格、任务、定时自动化、多模型一个地盘", link:["https://www.workbuddy.cn/","workbuddy.cn ↗"]},
+    {t:"概念", chip:"chip-concept", icon:"🤖", name:"扣子 Coze", kw:"扣子 coze bot 智能体 搭建", view:"pro", el:null, desc:"不写代码搭自己的专属 AI Bot", link:["https://www.coze.cn/","coze.cn ↗"]},
+    {t:"概念", chip:"chip-concept", icon:"🧲", name:"n8n / Zapier 无代码串联", kw:"n8n zapier make ifttt 无代码 自动化 串联 流水线", view:"pro", el:null, desc:"把各个 App 串成流水线，不写一行代码", link:["https://n8n.io/","n8n.io ↗"]},
+    {t:"概念", chip:"chip-concept", icon:"🎭", name:"让 AI 学你的风格", kw:"风格 卡片 代表作 文风 个人风格", view:"pro", el:null, desc:"喂 3-5 篇代表作，提炼你的专属风格卡片"},
+    {t:"概念", chip:"chip-concept", icon:"🎼", name:"多模型组合拳", kw:"组合 分工 流水线 搭配 多模型", view:"pro", el:null, desc:"调研/分析/成稿/配图/归档，各用各的最合适"}
+  ];
+
+  var resList = document.getElementById("resList");
+  var resEmpty = document.getElementById("resEmpty");
+  var resQuery = document.getElementById("resQuery");
+  var resCount = document.getElementById("resCount");
+
+  function go(view, el){
+    pendingEl = el || null;
+    location.hash = "#/" + view;
+  }
+
+  function runSearch(q){
+    q = (q || "").trim();
+    resQuery.textContent = q;
+    resList.innerHTML = "";
+    if(!q){
+      resCount.textContent = "请输入关键词";
+      resEmpty.style.display = "block";
+      resEmpty.querySelector("h3").textContent = "请输入关键词";
+      resEmpty.querySelector("p").textContent = "比如：周报、英语、旅行、豆包、提示词、简历";
+      return;
+    }
+    var keys = q.toLowerCase().split(/\s+/);
+    var hits = INDEX.filter(function(it){
+      var hay = (it.name + " " + it.kw + " " + it.desc + " " + it.t).toLowerCase();
+      return keys.every(function(k){ return hay.indexOf(k) > -1; });
+    });
+    resCount.textContent = "共找到 " + hits.length + " 条相关内容";
+    resEmpty.style.display = hits.length ? "none" : "block";
+    if(!hits.length){
+      resEmpty.querySelector("h3").textContent = "没有找到「" + q + "」相关内容";
+      resEmpty.querySelector("p").textContent = "换个说法试试，比如：周报、英语、旅行、豆包、提示词、简历";
+      return;
+    }
+    hits.forEach(function(it){
+      var item = document.createElement("div");
+      item.className = "res-item";
+      var main = document.createElement("div");
+      main.className = "r-main";
+      main.innerHTML = '<span class="res-chip ' + it.chip + '">' + it.t + '</span><h3>' + it.icon + " " + it.name + "</h3>" +
+        '<p class="r-desc">' + it.desc + "</p>";
+      var actions = document.createElement("div");
+      actions.className = "res-actions";
+      if(it.copy){
+        var cb = document.createElement("button");
+        cb.className = "mini-copy";
+        cb.textContent = "📋 复制这条提示词";
+        cb.addEventListener("click", function(){
+          copyText(it.copy, function(){
+            cb.textContent = "✅ 已复制";
+            setTimeout(function(){ cb.textContent = "📋 复制这条提示词"; }, 2000);
+          });
+        });
+        actions.appendChild(cb);
+      }
+      if(it.link){
+        var ex = document.createElement("a");
+        ex.className = "go-link";
+        ex.href = it.link[0];
+        ex.target = "_blank";
+        ex.rel = "noopener";
+        ex.textContent = it.link[1];
+        actions.appendChild(ex);
+      }
+      var goLink = document.createElement("a");
+      goLink.className = "go-link";
+      goLink.href = "javascript:void(0)";
+      goLink.textContent = "去「" + VIEW_TITLE(it.view) + "」查看 →";
+      goLink.addEventListener("click", function(){ go(it.view, it.el); });
+      actions.appendChild(goLink);
+      item.appendChild(main);
+      item.appendChild(actions);
+      resList.appendChild(item);
+    });
+  }
+  function VIEW_TITLE(v){ return TITLES[v] || v; }
+
+  /* 搜索表单：直接渲染结果页，hash 同步仅用于深链分享 */
+  var form = document.getElementById("searchForm");
+  var input = document.getElementById("searchInput");
+  function submitSearch(q){
+    q = (q || "").trim();
+    if(!q){ input.focus(); return; }
+    showView({name:"search", q:q});
+    setHash("#/search?q=" + encodeURIComponent(q));
+  }
+  form.addEventListener("submit", function(e){
+    e.preventDefault();
+    submitSearch(input.value);
+  });
+  /* 显式回车处理：不依赖表单隐式提交，任何环境都能用 */
+  input.addEventListener("keydown", function(e){
+    if(e.key === "Enter"){
+      e.preventDefault();
+      submitSearch(input.value);
+    }
+  });
+  document.getElementById("hotWords").addEventListener("click", function(e){
+    var b = e.target.closest("button");
+    if(!b) return;
+    input.value = b.textContent;
+    submitSearch(b.textContent);
+  });
+
+  /* ============ 一键复制 ============ */
+  function copyText(text, done){
+    function fallback(){
+      var ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      try{ document.execCommand("copy"); done(); }
+      catch(e){}
+      document.body.removeChild(ta);
+    }
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(done, fallback);
+    } else { fallback(); }
+  }
+  document.querySelectorAll(".copy-btn").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      var el = document.getElementById(btn.dataset.tpl);
+      var text = el ? el.textContent : "";
+      copyText(text, function(){
+        btn.textContent = "✅ 已复制，去粘贴给 AI 吧";
+        btn.classList.add("copied");
+        setTimeout(function(){ btn.textContent = "📋 一键复制"; btn.classList.remove("copied"); }, 2200);
+      });
+    });
+  });
+
+  /* ============ 场景分段切换 ============ */
+  var seg = document.getElementById("sceneSeg");
+  var cards = document.querySelectorAll("#sceneGrid .scene");
+  seg.addEventListener("click", function(e){
+    var btn = e.target.closest("button");
+    if(!btn) return;
+    seg.querySelectorAll("button").forEach(function(b){ b.classList.remove("active"); });
+    btn.classList.add("active");
+    var f = btn.dataset.filter;
+    cards.forEach(function(c){ c.hidden = (c.dataset.cat !== f); });
+    revealScan();
+  });
+
+  /* ============ 滚动显现 ============ */
+  var els = document.querySelectorAll(".reveal");
+  if("IntersectionObserver" in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if(en.isIntersecting){ en.target.classList.add("in"); io.unobserve(en.target); }
+      });
+    }, {threshold:.1, rootMargin:"0px 0px -30px 0px"});
+    els.forEach(function(el){ io.observe(el); });
+  } else {
+    els.forEach(function(el){ el.classList.add("in"); });
+  }
+  function revealScan(){
+    els.forEach(function(el){
+      var r = el.getBoundingClientRect();
+      if(r.top < window.innerHeight - 30 && r.bottom > 0) el.classList.add("in");
+    });
+  }
+
+  /* 启动：解析当前 hash（支持深链直达） */
+  var init = parseHash();
+  showView(init);
+  if(!location.hash) setHash("#/home");
+})();
+</script>
+</body>
+</html>
