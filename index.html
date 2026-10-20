@@ -85,8 +85,6 @@ button{font-family:inherit}
 .res-head h2{font-size:clamp(26px,3.6vw,42px);font-weight:700;letter-spacing:-.018em;line-height:1.2}
 .res-head h2 em{font-style:normal;color:var(--accent)}
 .res-head p{margin-top:10px;color:var(--ink-2);font-size:15.5px}
-.res-head .res-back{display:inline-flex;align-items:center;gap:5px;font-size:13.5px;font-weight:600;color:var(--accent);background:var(--accent-soft);border:0;border-radius:980px;padding:7px 15px;cursor:pointer;margin-bottom:22px;transition:.2s}
-.res-head .res-back:hover{background:var(--accent);color:#fff}
 .res-list{display:grid;gap:14px;max-width:880px}
 .res-item{background:#fff;border:1px solid rgba(0,0,0,.05);border-radius:var(--r-lg);padding:22px 24px;box-shadow:var(--sh-1);display:flex;gap:18px;align-items:center;flex-wrap:wrap;transition:transform .25s,box-shadow .25s}
 .res-item:hover{transform:translateY(-2px);box-shadow:var(--sh-2)}
@@ -345,7 +343,6 @@ footer{background:var(--bg-gray);padding:50px 0 34px;font-size:13.5px;color:var(
       <button type="button">旅行规划</button>
       <button type="button">豆包</button>
       <button type="button">小红书</button>
-      <button type="button">精准提问</button>
     </div>
     <div class="entry-grid">
       <a class="entry" href="#/principle">
@@ -400,7 +397,6 @@ footer{background:var(--bg-gray);padding:50px 0 34px;font-size:13.5px;color:var(
   <div class="subview">
     <div class="wrap">
       <div class="res-head">
-        <button class="res-back" id="resBack">← 返回首页</button>
         <h2>「<em id="resQuery"></em>」的结果</h2>
         <p id="resCount"></p>
       </div>
@@ -1205,7 +1201,6 @@ footer{background:var(--bg-gray);padding:50px 0 34px;font-size:13.5px;color:var(
     }
   }
   document.getElementById("navBack").addEventListener("click", goBack);
-  document.getElementById("resBack").addEventListener("click", goBack);
 
   /* ============ 搜索 ============ */
   var INDEX = [
@@ -1235,7 +1230,7 @@ footer{background:var(--bg-gray);padding:50px 0 34px;font-size:13.5px;color:var(
     {t:"模板", chip:"chip-tpl", icon:"✉️", name:"邮件润色", kw:"邮件 模板 提示词 润色", view:"usekit", el:"tpl-02", desc:"委婉/直接/替代方案三版一次出", copy:"请把下面这段话改写成专业的商务邮件。\n【原文】[粘贴原文]\n【背景】收件人是[客户/领导/同事]，我的目的是[催办/拒绝/道歉/请求支持]，希望语气[礼貌坚定/委婉/正式]\n【要求】300字以内；给出三个版本：委婉版、直接版、带替代方案版；结尾必须有明确的行动要求和截止时间"},
     {t:"模板", chip:"chip-tpl", icon:"📈", name:"Excel 公式生成", kw:"excel 公式 模板 提示词", view:"usekit", el:"tpl-03", desc:"要公式也要讲解，报错还能贴回去改", copy:"我有一个 Excel 表格：[描述结构，例如：A列姓名、B列部门、C列销售额、D列日期]。\n我想要实现：[目标，例如：按部门汇总销售额并计算占比]。\n请给我：1）可以直接粘贴使用的公式；2）每一段的含义解释；3）如果用数据透视表更简单，告诉我在新版 Excel 里怎么操作。"},
     {t:"模板", chip:"chip-tpl", icon:"🗣️", name:"英语口语教练", kw:"英语 口语 模板 提示词 外教", view:"usekit", el:"tpl-04", desc:"全程英语对话，每轮纠错 + 地道表达", copy:"你是我的英语口语教练。规则：\n1. 全程用英语和我对话，话题从[旅行/工作/学习]开始\n2. 我说完后，先用中文简短指出语法错误，再给出更地道的表达\n3. 然后问我一个新问题\n4. 我的水平约[雅思6分/初级]，语速放慢，用词控制在高中到四级范围\n现在开始第一个问题。"},
-    {t:"模板", chip:"chip-tpl", icon:"🧳", name:"旅行规划", kw:"旅行 模板 提示词 行程", view:"usekit", el:"tpl-05", desc:"按天行程 + 交通 + 花费 + 小众推荐", copy:"我和[人数/关系]想去[目的地]，玩[天数]天，人均预算[金额]，偏好[自然风光/人文/美食]，不喜欢打卡式赶路。\n请给出：\n1. 按天的行程，每天主要安排不超过3个\n2. 每天的交通方式和预计花费\n3. 2-3个本地人才去的小众推荐\n4. 需要提前预订的项目清单"},
+    {t:"模板", chip:"chip-tpl", icon:"🧳", name:"旅行规划提示词", kw:"旅行 模板 提示词 行程", view:"usekit", el:"tpl-05", desc:"按天行程 + 交通 + 花费 + 小众推荐", copy:"我和[人数/关系]想去[目的地]，玩[天数]天，人均预算[金额]，偏好[自然风光/人文/美食]，不喜欢打卡式赶路。\n请给出：\n1. 按天的行程，每天主要安排不超过3个\n2. 每天的交通方式和预计花费\n3. 2-3个本地人才去的小众推荐\n4. 需要提前预订的项目清单"},
     {t:"模板", chip:"chip-tpl", icon:"🍳", name:"冰箱清理食谱", kw:"食谱 模板 提示词 做饭", view:"usekit", el:"tpl-06", desc:"有什么做什么，30 分钟上桌", copy:"我冰箱现在有：[列食材]，厨具有[炒锅/电饭煲/空气炸锅]，口味偏好[辣/清淡]，忌口[不吃香菜/无辣不欢]。\n请设计3道菜，要求：\n1. 30分钟内完成\n2. 至少2道菜用掉大部分食材\n3. 列出详细步骤，包括火候和时间\n4. 最后给一个\"用现有食材还能凑出来的备选方案\""},
     {t:"模板", chip:"chip-tpl", icon:"📕", name:"小红书笔记", kw:"小红书 模板 提示词 笔记", view:"usekit", el:"tpl-07", desc:"标题正文标签一次到位，人设语气可选", copy:"你是小红书博主。请为[产品/主题]写一篇笔记。\n【要求】\n1. 3个备选标题，带emoji，制造好奇或戳痛点\n2. 正文500字以内，口语化，有真实使用体验感\n3. 结构：开头共鸣 → 使用过程 → 效果对比 → 适合谁\n4. 结尾5个相关标签\n人设风格：[闺蜜分享/专业测评/学生党平价]"},
     {t:"模板", chip:"chip-tpl", icon:"🎬", name:"短视频脚本", kw:"短视频 脚本 模板 提示词", view:"usekit", el:"tpl-08", desc:"钩子+信息点+CTA，按镜头出表格", copy:"为[主题]写一个60秒短视频脚本。\n【要求】\n1. 前3秒必须是钩子（提问/反常识/冲突）\n2. 中间分3个信息点，每个点配画面描述和台词\n3. 结尾一句行动号召\n4. 输出成表格：镜头编号 / 画面 / 台词 / 时长"},
@@ -1284,9 +1279,12 @@ footer{background:var(--bg-gray);padding:50px 0 34px;font-size:13.5px;color:var(
       return;
     }
     var keys = q.toLowerCase().split(/\s+/);
+    var qNoSpace = q.toLowerCase().replace(/\s+/g, "");
     var hits = INDEX.filter(function(it){
       var hay = (it.name + " " + it.kw + " " + it.desc + " " + it.t).toLowerCase();
-      return keys.every(function(k){ return hay.indexOf(k) > -1; });
+      var hayNoSpace = hay.replace(/\s+/g, "");
+      /* 两档匹配：整串短语（去空格）命中，或每个关键词都命中 */
+      return hayNoSpace.indexOf(qNoSpace) > -1 || keys.every(function(k){ return hay.indexOf(k) > -1; });
     });
     resCount.textContent = "共找到 " + hits.length + " 条相关内容";
     resEmpty.style.display = hits.length ? "none" : "block";
