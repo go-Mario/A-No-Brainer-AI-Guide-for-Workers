@@ -1,21 +1,33 @@
-MIT License
+版权声明
 
 Copyright (c) 2026 go-Mario
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+本仓库的教程正文、提示词、版式文案与页面（含 index.html 中的结构、样式和脚本）供公众在发布站点上免费阅读和个人学习。
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+除下列情形外，保留所有权利：
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+1. 你可以在发布的网页上阅读、搜索和学习。
+2. 你可以在自己的电脑上打开本仓库的 index.html，供自己学习。
+3. 你可以把页面上的某一条提示词复制到自己的 AI 对话里使用。
+4. 订正、补充场景或模板，请通过 GitHub Issues 或 Pull Request 提交。只有维护者审核并合并之后，改动才会成为本教程的一部分。
+
+未经维护者许可，不得把教程内容改编、转载、再发布，或另做一份对外传播的修改版。
+
+本教程是效率方法科普，不构成医疗、法律或投资建议。
+
+---
+
+Copyright (c) 2026 go-Mario
+
+The tutorial text, prompts, and the page in this repository (including the markup, styles, and script inside index.html) may be read for personal learning on the published site.
+
+All rights reserved, except:
+
+1. You may read, search, and study the published web page.
+2. You may open index.html locally for your own study.
+3. You may copy an individual prompt into your own AI chat.
+4. Corrections and additions are accepted only through GitHub Issues or pull requests, and only after the maintainer reviews and merges them.
+
+You may not adapt, republish, or circulate a modified version of the tutorial without the maintainer's permission.
+
+This tutorial is general productivity guidance and is not medical, legal, or investment advice.
