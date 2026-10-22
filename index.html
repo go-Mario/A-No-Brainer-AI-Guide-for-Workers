@@ -4,7 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>打工人的 AI 无脑教程</title>
-<meta name="description" content="写给普通人的 AI 极简指南：搜一下直达结果，五个板块按需查看——原理、认知与提问、主流工具、场景技巧、身份与模板。">
+<meta name="description" content="写给普通人的 AI 极简指南：搜一下直达结果，六个板块按需查看——基础原理、认知与提问、主流工具、场景技巧、身份与模板、高手进阶（可跳过）。免费学习，打开即用。">
+<link rel="canonical" href="https://go-mario.github.io/A-No-Brainer-AI-Guide-for-Workers/">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta property="og:site_name" content="打工人的 AI 无脑教程">
+<meta property="og:title" content="打工人的 AI 无脑教程">
+<meta property="og:description" content="写给每一个想用 AI 省时间的人。六个板块，搜一下就能抄：原理、提问、工具、场景、模板，进阶可跳过。免费学习，打开即用。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://go-mario.github.io/A-No-Brainer-AI-Guide-for-Workers/">
+<meta property="og:locale" content="zh_CN">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="打工人的 AI 无脑教程">
+<meta name="twitter:description" content="写给每一个想用 AI 省时间的人。六个板块，搜一下就能抄。免费学习，打开即用。">
 <style>
 :root{
   --bg:#FFFFFF; --bg-gray:#F5F5F7; --ink:#1D1D1F; --ink-2:#6E6E73; --ink-3:#9B9BA1;
@@ -20,7 +31,7 @@
 *{margin:0;padding:0;box-sizing:border-box}
 /* 确保 hidden 属性生效（否则会被 display:flex 等作者样式覆盖） */
 [hidden]{display:none!important}
-html{scroll-behavior:smooth}
+html{scroll-behavior:smooth;scroll-padding-top:calc(var(--nav-h) + 16px)}
 body{font-family:var(--font);background:var(--bg);color:var(--ink);font-size:17px;line-height:1.7;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
 a{color:var(--accent);text-decoration:none}
 a:hover{text-decoration:underline}
@@ -28,16 +39,19 @@ a:hover{text-decoration:underline}
 button{font-family:inherit}
 
 /* ============ 顶栏 ============ */
-.nav{position:fixed;top:0;left:0;right:0;z-index:200;height:var(--nav-h);background:rgba(255,255,255,.82);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid rgba(0,0,0,.07)}
-.nav-inner{max-width:var(--maxw);margin:0 auto;padding:0 22px;height:100%;display:flex;align-items:center;gap:14px}
-.nav-logo{font-size:15px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:7px;white-space:nowrap}
+.nav{position:fixed;top:0;left:0;right:0;z-index:200;height:var(--nav-h);background:#fff;border-bottom:1px solid rgba(0,0,0,.08);box-shadow:0 1px 0 rgba(255,255,255,1)}
+.nav-inner{max-width:var(--maxw);margin:0 auto;padding:0 22px;height:100%;display:flex;align-items:center;gap:10px;min-width:0}
+.nav-logo{font-size:15px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:7px;white-space:nowrap;flex:none}
 .nav-logo:hover{text-decoration:none}
-.nav-back{display:none;align-items:center;gap:5px;font-size:13.5px;font-weight:600;color:var(--accent);background:var(--accent-soft);border:0;border-radius:980px;padding:7px 15px;cursor:pointer;transition:.2s;margin-left:auto}
+.nav-links{display:flex;align-items:center;gap:2px;margin-left:auto;min-width:0;overflow-x:auto;scrollbar-width:none}
+.nav-links::-webkit-scrollbar{display:none}
+.nav-links a{font-size:13px;font-weight:600;color:var(--ink-2);padding:6px 8px;border-radius:8px;white-space:nowrap;flex:none}
+.nav-links a:hover{color:var(--accent);background:var(--accent-soft);text-decoration:none}
+.nav-links a.is-on{color:var(--accent);background:var(--accent-soft)}
+.nav-links a .ns{display:none}
+.nav-back{display:none;align-items:center;gap:5px;font-size:13.5px;font-weight:600;color:var(--accent);background:var(--accent-soft);border:0;border-radius:980px;padding:7px 12px;cursor:pointer;transition:.2s;flex:none}
 .nav-back:hover{background:var(--accent);color:#fff}
 .nav.in-sub .nav-back{display:inline-flex}
-.nav-home-link{font-size:13px;color:var(--ink-2);margin-left:auto;padding:6px 10px;border-radius:8px}
-.nav-home-link:hover{color:var(--accent);background:var(--accent-soft);text-decoration:none}
-.nav.in-sub .nav-home-link{display:none}
 
 /* ============ 视图系统 ============ */
 .view{display:none}
@@ -68,13 +82,17 @@ button{font-family:inherit}
 .hot span{font-size:13px;color:var(--ink-3)}
 .hot button{border:1px solid var(--line);background:#fff;color:var(--ink-2);font-size:13px;font-weight:600;border-radius:980px;padding:5px 14px;cursor:pointer;transition:.18s}
 .hot button:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
-.entry-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;width:min(1060px,100%);margin-top:52px}
+.home-next{margin-top:22px}
+.home-next .btn-pill:hover{text-decoration:none}
+.entry-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;width:min(1060px,100%);margin-top:28px}
 .entry{background:#fff;border:1px solid rgba(0,0,0,.05);border-radius:var(--r-lg);padding:22px 18px;text-align:left;cursor:pointer;transition:transform .3s cubic-bezier(.2,.6,.25,1),box-shadow .3s,border-color .3s;box-shadow:var(--sh-1);display:flex;flex-direction:column;gap:6px}
 .entry:hover{transform:translateY(-5px);box-shadow:var(--sh-2);border-color:#CBE2FA;text-decoration:none}
 .entry .e-num{font-size:11px;font-weight:800;letter-spacing:.14em;color:var(--accent)}
 .entry .e-icon{font-size:26px;line-height:1.2}
 .entry h3{font-size:16px;letter-spacing:-.01em;color:var(--ink)}
-.entry p{font-size:12.5px;color:var(--ink-2);line-height:1.55}
+.entry p{font-size:13.5px;color:var(--ink-2);line-height:1.6}
+.entry-opt{border-style:dashed}
+.entry-opt .e-num{color:#8A5A12}
 .entry .e-go{margin-top:auto;padding-top:8px;font-size:12.5px;font-weight:700;color:var(--accent)}
 .home-foot{margin-top:32px;font-size:12.5px;color:var(--ink-3)}
 .btn-pill{display:inline-flex;align-items:center;gap:6px;border-radius:980px;padding:13px 26px;font-size:15px;font-weight:600;cursor:pointer;transition:.22s;border:1px solid transparent;text-decoration:none;white-space:nowrap}
@@ -105,6 +123,8 @@ button{font-family:inherit}
 .res-empty{text-align:center;padding:70px 0 50px;color:var(--ink-2)}
 .res-empty .e-emoji{font-size:44px;margin-bottom:14px}
 .res-empty h3{font-size:20px;color:var(--ink);margin-bottom:8px}
+.searchbox.res-search{margin-top:18px;width:min(640px,100%)}
+.res-empty .hot{margin-top:14px}
 
 /* ============ 板块通用 ============ */
 .band-head{max-width:800px;margin:0 auto 58px;text-align:center}
@@ -220,11 +240,14 @@ details.idrow[open]{box-shadow:var(--sh-2)}
 details.idrow summary{list-style:none;cursor:pointer;padding:18px 22px;display:flex;align-items:center;gap:13px;font-weight:600;font-size:16.5px;user-select:none}
 details.idrow summary::-webkit-details-marker{display:none}
 details.idrow summary .id-emoji{font-size:22px}
-details.idrow summary .id-kick{margin-left:auto;font-size:13px;font-weight:600;color:var(--accent)}
+details.idrow summary .id-kick{margin-left:auto;font-size:13px;font-weight:600;color:var(--accent);flex:none}
+details.idrow summary .id-kick::before{content:"展开 ▾"}
+details.idrow[open] summary .id-kick::before{content:"收起 ▴"}
 .idbody{padding:2px 24px 20px 58px;display:grid;gap:8px;font-size:15px;color:var(--ink-2);line-height:1.65}
 .idbody b{color:var(--ink);font-weight:600}
 .idbody .first{color:var(--accent-deep)}
 .idbody .warn{color:#8A5A12}
+.card,.level,.tpl,.tool,.scene,.idrow,.band-head,.final-item,.sub-head{scroll-margin-top:calc(var(--nav-h) + 18px)}
 
 /* ============ 提示词模板 ============ */
 .tpl-note{max-width:860px;margin:0 auto 26px;font-size:14px;color:var(--ink-2);text-align:center;line-height:1.7}
@@ -289,11 +312,14 @@ footer{background:var(--bg-gray);padding:50px 0 34px;font-size:13.5px;color:var(
 @media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
 
 /* ============ 响应式 ============ */
+@media (max-width:980px){
+  .nav-links a .nl{display:none}
+  .nav-links a .ns{display:inline}
+}
 @media (max-width:1020px){
   .grid-3,.tool-grid,.final-grid{grid-template-columns:1fr 1fr}
   .tpl-grid,.search-grid,.scene-grid,.demo{grid-template-columns:1fr}
   .foot-grid{grid-template-columns:1fr 1fr}
-  .entry-grid{grid-template-columns:repeat(3,1fr)}
 }
 @media (max-width:680px){
   .subview{padding:calc(var(--nav-h) + 32px) 0 64px}
@@ -305,7 +331,8 @@ footer{background:var(--bg-gray);padding:50px 0 34px;font-size:13.5px;color:var(
   .final{padding:66px 0}
   .seg{flex-wrap:wrap;border-radius:var(--r-lg)}
   .seg button{flex:1 1 40%}
-  .nav-home-link{display:none}
+  .nav-name{display:none}
+  .nav-links a{padding:6px 7px}
   .res-item{flex-direction:column;align-items:flex-start}
 }
 </style>
@@ -320,9 +347,16 @@ footer{background:var(--bg-gray);padding:50px 0 34px;font-size:13.5px;color:var(
 
 <header class="nav" id="nav">
   <div class="nav-inner">
-    <a class="nav-logo" href="#/home">🧠 打工人的 AI 无脑教程</a>
-    <button class="nav-back" id="navBack">← 返回</button>
-    <a class="nav-home-link" href="#/home">首页</a>
+    <a class="nav-logo" href="#/home">🧠 <span class="nav-name">打工人的 AI 无脑教程</span></a>
+    <nav class="nav-links" aria-label="六个板块">
+      <a href="#/principle" data-view="principle" title="基础原理"><span class="nl">基础原理</span><span class="ns">原理</span></a>
+      <a href="#/mindset" data-view="mindset" title="认知与提问"><span class="nl">认知提问</span><span class="ns">提问</span></a>
+      <a href="#/tools" data-view="tools" title="主流工具"><span class="nl">主流工具</span><span class="ns">工具</span></a>
+      <a href="#/scenes" data-view="scenes" title="场景技巧"><span class="nl">场景技巧</span><span class="ns">场景</span></a>
+      <a href="#/usekit" data-view="usekit" title="身份与模板"><span class="nl">身份模板</span><span class="ns">身份</span></a>
+      <a href="#/pro" data-view="pro" title="高手进阶（可跳过）"><span class="nl">进阶选学</span><span class="ns">进阶</span></a>
+    </nav>
+    <button class="nav-back" id="navBack" type="button">← 返回</button>
   </div>
 </header>
 
@@ -343,6 +377,9 @@ footer{background:var(--bg-gray);padding:50px 0 34px;font-size:13.5px;color:var(
       <button type="button">旅行规划</button>
       <button type="button">豆包</button>
       <button type="button">小红书</button>
+    </div>
+    <div class="home-next">
+      <a class="btn-pill btn-primary" href="#/usekit" data-el="tpl-01">先抄周报模板</a>
     </div>
     <div class="entry-grid">
       <a class="entry" href="#/principle">
@@ -380,12 +417,12 @@ footer{background:var(--bg-gray);padding:50px 0 34px;font-size:13.5px;color:var(
         <p>9 种身份的第一课 + 8 个拿来即用的提示词</p>
         <span class="e-go">进入板块 →</span>
       </a>
-      <a class="entry" href="#/pro">
-        <span class="e-num">06</span>
+      <a class="entry entry-opt" href="#/pro">
+        <span class="e-num">06 · 可跳过</span>
         <span class="e-icon">🚀</span>
         <h3>高手进阶</h3>
-        <p>沉淀个人 Skill、定时任务、连接工具、自动化工作流</p>
-        <span class="e-go">进入板块 →</span>
+        <p>选学。用熟前面再看：沉淀 Skill、定时任务、把工具串起来</p>
+        <span class="e-go">想玩再看 →</span>
       </a>
     </div>
     <p class="home-foot">内容更新于 2026 年 10 月 · 工具排名参考 QuestMobile 数据 · 全部官网链接已逐一核验</p>
@@ -399,12 +436,24 @@ footer{background:var(--bg-gray);padding:50px 0 34px;font-size:13.5px;color:var(
       <div class="res-head">
         <h2>「<em id="resQuery"></em>」的结果</h2>
         <p id="resCount"></p>
+        <form class="searchbox res-search" id="resSearchForm">
+          <input type="search" id="resSearchInput" placeholder="换个词再搜：周报、英语、豆包……" autocomplete="off" enterkeyhint="search">
+          <button type="submit" class="btn-pill btn-primary">搜索</button>
+        </form>
       </div>
       <div class="res-list" id="resList"></div>
       <div class="res-empty" id="resEmpty" style="display:none">
         <div class="e-emoji">🔍</div>
-        <h3>没有找到相关内容</h3>
-        <p>换个说法试试，比如：周报、英语、旅行、豆包、提示词、简历</p>
+        <h3 id="resEmptyTitle">没有找到相关内容</h3>
+        <p id="resEmptyHint">换个说法试试</p>
+        <div class="hot" id="resSuggest">
+          <button type="button">周报</button>
+          <button type="button">英语</button>
+          <button type="button">旅行</button>
+          <button type="button">豆包</button>
+          <button type="button">提示词</button>
+          <button type="button">简历</button>
+        </div>
       </div>
     </div>
   </div>
@@ -690,7 +739,7 @@ footer{background:var(--bg-gray);padding:50px 0 34px;font-size:13.5px;color:var(
             <li><span class="step-n">3</span><span>核对成果数字、删掉它替你编的内容，再微调语气提交。</span></li>
           </ul>
           <p class="scene-tip"><b>注意：</b>记录里没有的信息它会补全——凡是你不确定的「事实」，一律删掉或改对。</p>
-          <div class="scene-foot"><span class="scene-tools"><a href="https://www.doubao.com/" target="_blank" rel="noopener">豆包</a> · <a href="https://www.kimi.com/" target="_blank" rel="noopener">Kimi</a></span><a class="tpl-link" href="#/usekit">用模板 →</a></div>
+          <div class="scene-foot"><span class="scene-tools"><a href="https://www.doubao.com/" target="_blank" rel="noopener">豆包</a> · <a href="https://www.kimi.com/" target="_blank" rel="noopener">Kimi</a></span><a class="tpl-link" href="#/usekit" data-el="tpl-01">用模板 →</a></div>
         </article>
 
         <article class="scene" data-cat="work" id="scene-email">
@@ -702,7 +751,7 @@ footer{background:var(--bg-gray);padding:50px 0 34px;font-size:13.5px;color:var(
             <li><span class="step-n">3</span><span>三版对比后挑一版，再让它「压缩到 200 字」或「结尾加一句明确的截止时间」。</span></li>
           </ul>
           <p class="scene-tip"><b>注意：</b>涉及承诺、赔款、法律措辞的邮件，AI 只能改语气，实质内容自己把关。</p>
-          <div class="scene-foot"><span class="scene-tools"><a href="https://www.doubao.com/" target="_blank" rel="noopener">豆包</a> · <a href="https://www.qianwen.com/" target="_blank" rel="noopener">千问</a></span><a class="tpl-link" href="#/usekit">用模板 →</a></div>
+          <div class="scene-foot"><span class="scene-tools"><a href="https://www.doubao.com/" target="_blank" rel="noopener">豆包</a> · <a href="https://www.qianwen.com/" target="_blank" rel="noopener">千问</a></span><a class="tpl-link" href="#/usekit" data-el="tpl-02">用模板 →</a></div>
         </article>
 
         <article class="scene" data-cat="work" id="scene-ppt">
@@ -726,7 +775,7 @@ footer{background:var(--bg-gray);padding:50px 0 34px;font-size:13.5px;color:var(
             <li><span class="step-n">3</span><span>公式报错就把错误信息原样贴回去，让它改；同时问「有没有更简单的做法」。</span></li>
           </ul>
           <p class="scene-tip"><b>注意：</b>拿到公式先在副本上试跑，确认无误再覆盖原表。</p>
-          <div class="scene-foot"><span class="scene-tools"><a href="https://www.deepseek.com/" target="_blank" rel="noopener">DeepSeek</a> · <a href="https://www.doubao.com/" target="_blank" rel="noopener">豆包</a></span><a class="tpl-link" href="#/usekit">用模板 →</a></div>
+          <div class="scene-foot"><span class="scene-tools"><a href="https://www.deepseek.com/" target="_blank" rel="noopener">DeepSeek</a> · <a href="https://www.doubao.com/" target="_blank" rel="noopener">豆包</a></span><a class="tpl-link" href="#/usekit" data-el="tpl-03">用模板 →</a></div>
         </article>
 
         <article class="scene" data-cat="learn" id="scene-english" hidden>
@@ -738,7 +787,7 @@ footer{background:var(--bg-gray);padding:50px 0 34px;font-size:13.5px;color:var(
             <li><span class="step-n">3</span><span>每轮它纠错后，把正确表达跟读三遍；一周后让它总结你的高频错误。</span></li>
           </ul>
           <p class="scene-tip"><b>注意：</b>它的发音示范依赖语音朗读功能，跟读后最好录下来自己对比。</p>
-          <div class="scene-foot"><span class="scene-tools"><a href="https://www.doubao.com/" target="_blank" rel="noopener">豆包</a> · <a href="https://chatgpt.com/" target="_blank" rel="noopener">ChatGPT</a></span><a class="tpl-link" href="#/usekit">用模板 →</a></div>
+          <div class="scene-foot"><span class="scene-tools"><a href="https://www.doubao.com/" target="_blank" rel="noopener">豆包</a> · <a href="https://chatgpt.com/" target="_blank" rel="noopener">ChatGPT</a></span><a class="tpl-link" href="#/usekit" data-el="tpl-04">用模板 →</a></div>
         </article>
 
         <article class="scene" data-cat="learn" id="scene-paper" hidden>
@@ -750,7 +799,7 @@ footer{background:var(--bg-gray);padding:50px 0 34px;font-size:13.5px;color:var(
             <li><span class="step-n">3</span><span>最后问「对我的启发：我的研究方向是 X」——把信息转成自己的东西。</span></li>
           </ul>
           <p class="scene-tip"><b>注意：</b>它可能漏读中间章节，关键数据回原文核对；引用论文请勿照抄它的转述。</p>
-          <div class="scene-foot"><span class="scene-tools"><a href="https://www.kimi.com/" target="_blank" rel="noopener">Kimi</a> · <a href="https://chatglm.cn/" target="_blank" rel="noopener">智谱清言</a></span><a class="tpl-link" href="#/usekit">用模板 →</a></div>
+          <div class="scene-foot"><span class="scene-tools"><a href="https://www.kimi.com/" target="_blank" rel="noopener">Kimi</a> · <a href="https://chatglm.cn/" target="_blank" rel="noopener">智谱清言</a></span><a class="tpl-link" href="#/usekit" data-el="tpl-panel">用模板 →</a></div>
         </article>
 
         <article class="scene" data-cat="life" id="scene-travel" hidden>
@@ -762,7 +811,7 @@ footer{background:var(--bg-gray);padding:50px 0 34px;font-size:13.5px;color:var(
             <li><span class="step-n">3</span><span>逐天审，不顺的直接说「第二天太满，减一个景点，换成逛街」。</span></li>
           </ul>
           <p class="scene-tip"><b>注意：</b>店家和票价可能过时或不属实，预定前用官方渠道二次确认。</p>
-          <div class="scene-foot"><span class="scene-tools"><a href="https://www.doubao.com/" target="_blank" rel="noopener">豆包</a> · <a href="https://gemini.google.com/" target="_blank" rel="noopener">Gemini</a></span><a class="tpl-link" href="#/usekit">用模板 →</a></div>
+          <div class="scene-foot"><span class="scene-tools"><a href="https://www.doubao.com/" target="_blank" rel="noopener">豆包</a> · <a href="https://gemini.google.com/" target="_blank" rel="noopener">Gemini</a></span><a class="tpl-link" href="#/usekit" data-el="tpl-05">用模板 →</a></div>
         </article>
 
         <article class="scene" data-cat="life" id="scene-recipe" hidden>
@@ -774,7 +823,7 @@ footer{background:var(--bg-gray);padding:50px 0 34px;font-size:13.5px;color:var(
             <li><span class="step-n">3</span><span>做完把问题反馈给它：「第二步按你说的糊锅了，哪里不对？」——下次更准。</span></li>
           </ul>
           <p class="scene-tip"><b>注意：</b>生熟、相克、过敏原它可能说错，海鲜和野生菌务必自己确认。</p>
-          <div class="scene-foot"><span class="scene-tools"><a href="https://www.doubao.com/" target="_blank" rel="noopener">豆包</a> · <a href="https://www.qianwen.com/" target="_blank" rel="noopener">千问</a></span><a class="tpl-link" href="#/usekit">用模板 →</a></div>
+          <div class="scene-foot"><span class="scene-tools"><a href="https://www.doubao.com/" target="_blank" rel="noopener">豆包</a> · <a href="https://www.qianwen.com/" target="_blank" rel="noopener">千问</a></span><a class="tpl-link" href="#/usekit" data-el="tpl-06">用模板 →</a></div>
         </article>
 
         <article class="scene" data-cat="create" id="scene-rednote" hidden>
@@ -786,7 +835,7 @@ footer{background:var(--bg-gray);padding:50px 0 34px;font-size:13.5px;color:var(
             <li><span class="step-n">3</span><span>挑一版让它「去掉 AI 味」，再替换成你自己的真实细节，最后人工读一遍。</span></li>
           </ul>
           <p class="scene-tip"><b>注意：</b>平台对纯 AI 内容有限流，务必注入真实体验；功效宣传遵守广告法。</p>
-          <div class="scene-foot"><span class="scene-tools"><a href="https://www.doubao.com/" target="_blank" rel="noopener">豆包</a> · <a href="https://claude.ai/" target="_blank" rel="noopener">Claude</a></span><a class="tpl-link" href="#/usekit">用模板 →</a></div>
+          <div class="scene-foot"><span class="scene-tools"><a href="https://www.doubao.com/" target="_blank" rel="noopener">豆包</a> · <a href="https://claude.ai/" target="_blank" rel="noopener">Claude</a></span><a class="tpl-link" href="#/usekit" data-el="tpl-07">用模板 →</a></div>
         </article>
 
         <article class="scene" data-cat="create" id="scene-video" hidden>
@@ -798,7 +847,7 @@ footer{background:var(--bg-gray);padding:50px 0 34px;font-size:13.5px;color:var(
             <li><span class="step-n">3</span><span>拍摄时用脚本当提词器；发布后把播放数据反馈给它，让它分析哪句留住了人。</span></li>
           </ul>
           <p class="scene-tip"><b>注意：</b>钩子别夸大其词，标题党会被平台限流也会掉口碑。</p>
-          <div class="scene-foot"><span class="scene-tools"><a href="https://www.doubao.com/" target="_blank" rel="noopener">豆包</a> · <a href="https://www.qianwen.com/" target="_blank" rel="noopener">千问</a></span><a class="tpl-link" href="#/usekit">用模板 →</a></div>
+          <div class="scene-foot"><span class="scene-tools"><a href="https://www.doubao.com/" target="_blank" rel="noopener">豆包</a> · <a href="https://www.qianwen.com/" target="_blank" rel="noopener">千问</a></span><a class="tpl-link" href="#/usekit" data-el="tpl-08">用模板 →</a></div>
         </article>
 
       </div>
@@ -812,13 +861,21 @@ footer{background:var(--bg-gray);padding:50px 0 34px;font-size:13.5px;color:var(
       <div class="band-head">
         <p class="chapter">05 · 对号入座 & 拿来就用</p>
         <h2>你的身份，<br>你的第一课。</h2>
-        <p class="lede">点开你的身份拿走「第一课」和避坑提醒；模板区的提示词，复制后把方括号内容换成你的，直接发给 AI。</p>
+        <p class="lede">两个切换就够：先看你的身份「第一课」，或直接复制提示词。模板里的方括号换成你的信息，发给 AI 即可。</p>
       </div>
 
+      <div class="seg-wrap">
+        <div class="seg" id="useSeg" role="tablist" aria-label="身份与模板">
+          <button type="button" class="active" data-pane="ids" role="tab" aria-selected="true">身份速查</button>
+          <button type="button" data-pane="tpls" role="tab" aria-selected="false">提示词模板</button>
+        </div>
+      </div>
+
+      <div id="pane-ids">
       <h3 class="sub-head">🧭 身份速查 · 点开看你的第一课</h3>
       <div class="idlist">
         <details class="idrow">
-          <summary><span class="id-emoji">🎓</span>大学生 / 研究生<span class="id-kick">展开 ▾</span></summary>
+          <summary><span class="id-emoji">🎓</span>大学生 / 研究生<span class="id-kick"></span></summary>
           <div class="idbody">
             <div><b>AI 能帮你：</b>论文 PDF 速读 · 雅思口语陪练 · 简历优化 · 备考出题与讲评</div>
             <div><b>工具组合：</b>Kimi（长文档）+ DeepSeek（推理问答）+ 豆包（日常）</div>
@@ -827,7 +884,7 @@ footer{background:var(--bg-gray);padding:50px 0 34px;font-size:13.5px;color:var(
           </div>
         </details>
         <details class="idrow">
-          <summary><span class="id-emoji">💼</span>职场新人<span class="id-kick">展开 ▾</span></summary>
+          <summary><span class="id-emoji">💼</span>职场新人<span class="id-kick"></span></summary>
           <div class="idbody">
             <div><b>AI 能帮你：</b>周报日报 · 邮件话术 · Excel 公式 · PPT 大纲</div>
             <div><b>工具组合：</b>豆包（顺手）+ 千问（办公套件）</div>
@@ -836,7 +893,7 @@ footer{background:var(--bg-gray);padding:50px 0 34px;font-size:13.5px;color:var(
           </div>
         </details>
         <details class="idrow">
-          <summary><span class="id-emoji">🗂️</span>行政 / 人事<span class="id-kick">展开 ▾</span></summary>
+          <summary><span class="id-emoji">🗂️</span>行政 / 人事<span class="id-kick"></span></summary>
           <div class="idbody">
             <div><b>AI 能帮你：</b>通知公文初稿 · 会议纪要 · 表格整理 · 制度草拟</div>
             <div><b>工具组合：</b>讯飞星火（录音转写）+ 豆包（文书）</div>
@@ -845,7 +902,7 @@ footer{background:var(--bg-gray);padding:50px 0 34px;font-size:13.5px;color:var(
           </div>
         </details>
         <details class="idrow">
-          <summary><span class="id-emoji">👩‍🏫</span>教师<span class="id-kick">展开 ▾</span></summary>
+          <summary><span class="id-emoji">👩‍🏫</span>教师<span class="id-kick"></span></summary>
           <div class="idbody">
             <div><b>AI 能帮你：</b>分层出题 · 备课资料 · 学生评语 · 家校沟通话术</div>
             <div><b>工具组合：</b>豆包 + DeepSeek（理科讲题）</div>
@@ -854,7 +911,7 @@ footer{background:var(--bg-gray);padding:50px 0 34px;font-size:13.5px;color:var(
           </div>
         </details>
         <details class="idrow">
-          <summary><span class="id-emoji">💻</span>程序员<span class="id-kick">展开 ▾</span></summary>
+          <summary><span class="id-emoji">💻</span>程序员<span class="id-kick"></span></summary>
           <div class="idbody">
             <div><b>AI 能帮你：</b>报错排查 · 代码生成与审查 · 读陌生代码库 · 写注释测试</div>
             <div><b>工具组合：</b>Claude / DeepSeek + GitHub Copilot</div>
@@ -863,7 +920,7 @@ footer{background:var(--bg-gray);padding:50px 0 34px;font-size:13.5px;color:var(
           </div>
         </details>
         <details class="idrow">
-          <summary><span class="id-emoji">🎨</span>设计师<span class="id-kick">展开 ▾</span></summary>
+          <summary><span class="id-emoji">🎨</span>设计师<span class="id-kick"></span></summary>
           <div class="idbody">
             <div><b>AI 能帮你：</b>灵感发散 · AI 配图海报 · 方案文案 · 客户沟通话术</div>
             <div><b>工具组合：</b>即梦（出图）+ Claude / 豆包（文案）</div>
@@ -872,7 +929,7 @@ footer{background:var(--bg-gray);padding:50px 0 34px;font-size:13.5px;color:var(
           </div>
         </details>
         <details class="idrow">
-          <summary><span class="id-emoji">📣</span>销售 / 市场<span class="id-kick">展开 ▾</span></summary>
+          <summary><span class="id-emoji">📣</span>销售 / 市场<span class="id-kick"></span></summary>
           <div class="idbody">
             <div><b>AI 能帮你：</b>客户行业调研 · 方案初稿 · 异议应对话术 · 活动策划</div>
             <div><b>工具组合：</b>秘塔（调研）+ 元宝（公众号情报）+ 千问（方案）</div>
@@ -881,7 +938,7 @@ footer{background:var(--bg-gray);padding:50px 0 34px;font-size:13.5px;color:var(
           </div>
         </details>
         <details class="idrow">
-          <summary><span class="id-emoji">🏪</span>个体户 / 小生意<span class="id-kick">展开 ▾</span></summary>
+          <summary><span class="id-emoji">🏪</span>个体户 / 小生意<span class="id-kick"></span></summary>
           <div class="idbody">
             <div><b>AI 能帮你：</b>菜单海报文案 · 电商详情页 · 客服话术 · 记账分析</div>
             <div><b>工具组合：</b>豆包（全能）+ 即梦（海报图）+ 元宝（找趋势）</div>
@@ -890,7 +947,7 @@ footer{background:var(--bg-gray);padding:50px 0 34px;font-size:13.5px;color:var(
           </div>
         </details>
         <details class="idrow">
-          <summary><span class="id-emoji">👵</span>父母长辈<span class="id-kick">展开 ▾</span></summary>
+          <summary><span class="id-emoji">👵</span>父母长辈<span class="id-kick"></span></summary>
           <div class="idbody">
             <div><b>AI 能帮你：</b>手机使用答疑 · 养生谣言辨别 · 说明书人话版 · 出行规划</div>
             <div><b>工具组合：</b>豆包（按住语音提问）+ 元宝</div>
@@ -899,8 +956,10 @@ footer{background:var(--bg-gray);padding:50px 0 34px;font-size:13.5px;color:var(
           </div>
         </details>
       </div>
+      </div>
 
-      <h3 class="sub-head" style="margin-top:72px">🧰 提示词模板 · 复制就能用</h3>
+      <div id="pane-tpls" hidden>
+      <h3 class="sub-head" id="tpl-panel">🧰 提示词模板 · 复制就能用</h3>
       <p class="tpl-note">模板里带【】和方括号的是「占位符」，换成你的信息即可；后面跟着的「怎么改」是最容易被忽略的要点。</p>
       <div class="tpl-grid">
         <div class="tpl">
@@ -990,6 +1049,7 @@ footer{background:var(--bg-gray);padding:50px 0 34px;font-size:13.5px;color:var(
           <button class="copy-btn" data-tpl="tpl-08">📋 一键复制</button>
         </div>
       </div>
+      </div>
     </div>
   </div>
 </section>
@@ -999,9 +1059,9 @@ footer{background:var(--bg-gray);padding:50px 0 34px;font-size:13.5px;color:var(
   <div class="subview">
     <div class="wrap">
       <div class="band-head">
-        <p class="chapter">06 · 高手进阶</p>
+        <p class="chapter">06 · 高手进阶 · 可跳过</p>
         <h2>从「每次手动问」，<br>到「它到点自己干」。</h2>
-        <p class="lede">前面五步让你用上 AI，这一章让你甩不开它：把经验沉淀成资产、让任务自动发生、让 AI 连接你的其它工具。按 L5 到 L9 循序渐进，不用一步到位。</p>
+        <p class="lede">这一章可以整章跳过。原理、提问、工具、场景和模板，已经够日常使用。想再省力时，再看怎么把经验沉淀成资产、让任务到点自己发生。按 L5 到 L9 慢慢来，不用一次学完。</p>
       </div>
 
       <div class="levels">
@@ -1087,7 +1147,10 @@ footer{background:var(--bg-gray);padding:50px 0 34px;font-size:13.5px;color:var(
     <div class="foot-grid">
       <div class="foot-col">
         <p class="foot-brand">🧠 打工人的 AI 无脑教程</p>
-        <p>写给普通人的 AI 极简指南：懂原理 → 换认知 → 选工具 → 抄场景 → 拿模板，五步把 AI 变成第二双手。</p>
+        <p>六个板块按需学：懂原理 → 换认知 → 选工具 → 抄场景 → 拿模板 → 进阶（可跳过）。</p>
+        <p>免费给大家学习、复制和改写（MIT 许可）。</p>
+        <a href="https://github.com/go-Mario/A-No-Brainer-AI-Guide-for-Workers" target="_blank" rel="noopener">GitHub 仓库</a>
+        <a href="https://github.com/go-Mario/A-No-Brainer-AI-Guide-for-Workers/issues" target="_blank" rel="noopener">反馈与纠错（Issues）</a>
       </div>
       <div class="foot-col">
         <strong>快速通道</strong>
@@ -1106,7 +1169,7 @@ footer{background:var(--bg-gray);padding:50px 0 34px;font-size:13.5px;color:var(
       </div>
     </div>
     <div class="foot-bar">
-      <span>© 2026 打工人的 AI 无脑教程 · 内容更新于 2026 年 10 月</span>
+      <span>© 2026 打工人的 AI 无脑教程 · 免费学习 · 内容更新于 2026 年 10 月</span>
       <span>收藏一百篇教程，不如跑通一个场景</span>
     </div>
   </div>
@@ -1127,16 +1190,57 @@ footer{background:var(--bg-gray);padding:50px 0 34px;font-size:13.5px;color:var(
     var m = h.match(/^#\/(\w+)(?:\?(.*))?$/);
     var name = m ? m[1] : "home";
     var q = "";
+    var at = "";
     if(m && m[2]){
-      var kv = m[2].replace(/^q=/,"");
+      var qSegs = [];
+      m[2].split("&").forEach(function(part){
+        if(part.indexOf("at=") === 0){
+          try{ at = decodeURIComponent(part.slice(3)); }catch(e){ at = part.slice(3); }
+        } else {
+          qSegs.push(part);
+        }
+      });
+      var kv = qSegs.join("&").replace(/^q=/,"");
       try{ q = decodeURIComponent(kv); }catch(e){ q = kv; }
     }
     if(VIEWS.indexOf(name) < 0) name = "home";
-    return {name:name, q:q};
+    return {name:name, q:q, at:at};
   }
 
   function setHash(h){
     try{ if(location.hash !== h) location.hash = h; }catch(e){}
+  }
+
+  function setUsePane(which){
+    var ids = document.getElementById("pane-ids");
+    var tpls = document.getElementById("pane-tpls");
+    if(!ids || !tpls) return;
+    ids.hidden = which !== "ids";
+    tpls.hidden = which !== "tpls";
+    var seg = document.getElementById("useSeg");
+    if(!seg) return;
+    seg.querySelectorAll("button").forEach(function(b){
+      var on = b.getAttribute("data-pane") === which;
+      b.classList.toggle("active", on);
+      b.setAttribute("aria-selected", on ? "true" : "false");
+    });
+  }
+
+  function revealTarget(t){
+    var det = t.tagName === "DETAILS" ? t : (t.closest ? t.closest("details") : null);
+    if(det) det.open = true;
+    if(t.classList && t.classList.contains("scene")){
+      var cat = t.getAttribute("data-cat");
+      var seg = document.getElementById("sceneSeg");
+      if(seg && cat){
+        seg.querySelectorAll("button").forEach(function(b){
+          b.classList.toggle("active", b.getAttribute("data-filter") === cat);
+        });
+        document.querySelectorAll("#sceneGrid .scene").forEach(function(c){
+          c.hidden = c.getAttribute("data-cat") !== cat;
+        });
+      }
+    }
   }
 
   function showView(state){
@@ -1145,29 +1249,35 @@ footer{background:var(--bg-gray);padding:50px 0 34px;font-size:13.5px;color:var(
     var el = document.getElementById("view-" + name);
     if(el) el.classList.add("active");
     nav.classList.toggle("in-sub", name !== "home");
+    document.querySelectorAll(".nav-links a").forEach(function(a){
+      var on = a.getAttribute("data-view") === name;
+      a.classList.toggle("is-on", on);
+      if(on) a.setAttribute("aria-current", "page");
+      else a.removeAttribute("aria-current");
+    });
     document.title = (name === "home" ? "" : TITLES[name] + " · ") + TITLES.home;
     if(name === "search"){ runSearch(state.q); }
-    if(pendingEl){
-      var t = document.getElementById(pendingEl);
-      if(t){
-        setTimeout(function(){
-          t.scrollIntoView({behavior:"smooth", block:"center"});
-          t.classList.add("flash");
-          setTimeout(function(){ t.classList.remove("flash"); }, 2200);
-        }, 150);
-      }
-      pendingEl = null;
+    var target = pendingEl || state.at || "";
+    if(name === "usekit"){
+      setUsePane(target.indexOf("tpl-") === 0 ? "tpls" : "ids");
     }
+    if(target){
+      var t = document.getElementById(target);
+      if(t){
+        revealTarget(t);
+        var box = (t.closest && t.closest(".tpl, .scene, .tool, .idrow, .level, .card")) || t;
+        setTimeout(function(){
+          box.scrollIntoView({behavior:"smooth", block:"start"});
+          box.classList.add("flash");
+          setTimeout(function(){ box.classList.remove("flash"); }, 2200);
+        }, 160);
+      }
+    }
+    pendingEl = null;
     window.scrollTo(0, 0);
     revealScan();
   }
 
-  /* 切换视图：立即生效（纯 DOM 操作），hash 仅用于深链与浏览器前进后退 */
-  function go(view, el){
-    pendingEl = el || null;
-    showView({name:view, q:""});
-    setHash("#/" + view);
-  }
   function goHome(){
     showView({name:"home", q:""});
     setHash("#/home");
@@ -1180,7 +1290,7 @@ footer{background:var(--bg-gray);padding:50px 0 34px;font-size:13.5px;color:var(
   document.querySelectorAll('a[href^="#/"]').forEach(function(a){
     a.addEventListener("click", function(e){
       e.preventDefault();
-      var v = a.getAttribute("href").replace(/^#\//, "");
+      var v = a.getAttribute("href").replace(/^#\//, "").split("?")[0];
       go(v, a.dataset.el || null);
     });
   });
@@ -1247,7 +1357,7 @@ footer{background:var(--bg-gray);padding:50px 0 34px;font-size:13.5px;color:var(
     {t:"概念", chip:"chip-concept", icon:"🛠️", name:"多轮打磨话术", kw:"迭代 打磨 太长 语气 修改 多轮", view:"mindset", el:null, desc:"调长度/调语气/要选项/让它先要材料——直接套用"},
     {t:"概念", chip:"chip-concept", icon:"🔒", name:"隐私红线", kw:"隐私 安全 保密 脱敏 红线", view:"principle", el:null, desc:"身份证、银行卡、密码、公司机密不要输入"},
     {t:"概念", chip:"chip-concept", icon:"📋", name:"工作流思维", kw:"工作流 效率 自动化 流程", view:"mindset", el:null, desc:"把重复的事拆成「AI 做什么、你做什么」"},
-    {t:"概念", chip:"chip-concept", icon:"🧩", name:"把工作逆向成 Skill / 模板", kw:"skill 模板 sop 沉淀 复用 逆向 个人提示词库", view:"pro", el:null, desc:"做完一件漂亮工作，立刻让 AI 拆成可复用资产"},
+    {t:"概念", chip:"chip-concept", icon:"🧩", name:"把工作逆向成 Skill / 模板", kw:"skill 模板 sop 沉淀 复用 逆向 个人提示词库 选学 可跳过 高手进阶", view:"pro", el:null, desc:"做完一件漂亮工作，立刻让 AI 拆成可复用资产。这一章可以整章跳过"},
     {t:"概念", chip:"chip-concept", icon:"⏰", name:"定时任务", kw:"定时 任务 自动 到点 提醒 计划 自动化", view:"pro", el:null, desc:"让 AI 到点自己开工：每周简报、本月账单、晨间计划"},
     {t:"概念", chip:"chip-concept", icon:"🔌", name:"连接其它工具", kw:"连接 工具 插件 agent mcp 浏览器 邮箱 日历", view:"pro", el:null, desc:"从聊天到做事：AI 自己去拿网页、文档和邮件"},
     {t:"概念", chip:"chip-concept", icon:"🏢", name:"WorkBuddy 一体化工作台", kw:"workbuddy 工作台 集合 集成 办公套件", view:"pro", el:null, desc:"文档、表格、任务、定时自动化、多模型一个地盘", link:["https://www.workbuddy.cn/","workbuddy.cn ↗"]},
@@ -1261,21 +1371,27 @@ footer{background:var(--bg-gray);padding:50px 0 34px;font-size:13.5px;color:var(
   var resEmpty = document.getElementById("resEmpty");
   var resQuery = document.getElementById("resQuery");
   var resCount = document.getElementById("resCount");
+  var resEmptyTitle = document.getElementById("resEmptyTitle");
+  var resEmptyHint = document.getElementById("resEmptyHint");
+  var resSearchInput = document.getElementById("resSearchInput");
 
   function go(view, el){
     pendingEl = el || null;
-    location.hash = "#/" + view;
+    var next = "#/" + view + (el ? "?at=" + encodeURIComponent(el) : "");
+    if(location.hash === next) showView(parseHash());
+    else location.hash = next;
   }
 
   function runSearch(q){
     q = (q || "").trim();
-    resQuery.textContent = q;
+    resQuery.textContent = q || "关键词";
+    if(resSearchInput && resSearchInput.value !== q) resSearchInput.value = q;
     resList.innerHTML = "";
     if(!q){
-      resCount.textContent = "请输入关键词";
+      resCount.textContent = "输入关键词，或点一个建议";
       resEmpty.style.display = "block";
-      resEmpty.querySelector("h3").textContent = "请输入关键词";
-      resEmpty.querySelector("p").textContent = "比如：周报、英语、旅行、豆包、提示词、简历";
+      resEmptyTitle.textContent = "先写一个关键词";
+      resEmptyHint.textContent = "也可以直接点这些：";
       return;
     }
     var keys = q.toLowerCase().split(/\s+/);
@@ -1289,8 +1405,8 @@ footer{background:var(--bg-gray);padding:50px 0 34px;font-size:13.5px;color:var(
     resCount.textContent = "共找到 " + hits.length + " 条相关内容";
     resEmpty.style.display = hits.length ? "none" : "block";
     if(!hits.length){
-      resEmpty.querySelector("h3").textContent = "没有找到「" + q + "」相关内容";
-      resEmpty.querySelector("p").textContent = "换个说法试试，比如：周报、英语、旅行、豆包、提示词、简历";
+      resEmptyTitle.textContent = "没有找到「" + q + "」相关内容";
+      resEmptyHint.textContent = "换个说法试试：";
       return;
     }
     hits.forEach(function(it){
@@ -1341,7 +1457,13 @@ footer{background:var(--bg-gray);padding:50px 0 34px;font-size:13.5px;color:var(
   var input = document.getElementById("searchInput");
   function submitSearch(q){
     q = (q || "").trim();
-    if(!q){ input.focus(); return; }
+    if(!q){
+      var onSearch = document.getElementById("view-search").classList.contains("active");
+      (onSearch && resSearchInput ? resSearchInput : input).focus();
+      return;
+    }
+    input.value = q;
+    if(resSearchInput) resSearchInput.value = q;
     showView({name:"search", q:q});
     setHash("#/search?q=" + encodeURIComponent(q));
   }
@@ -1361,6 +1483,26 @@ footer{background:var(--bg-gray);padding:50px 0 34px;font-size:13.5px;color:var(
     if(!b) return;
     input.value = b.textContent;
     submitSearch(b.textContent);
+  });
+  document.getElementById("resSearchForm").addEventListener("submit", function(e){
+    e.preventDefault();
+    submitSearch(resSearchInput.value);
+  });
+  resSearchInput.addEventListener("keydown", function(e){
+    if(e.key === "Enter"){
+      e.preventDefault();
+      submitSearch(resSearchInput.value);
+    }
+  });
+  document.getElementById("resSuggest").addEventListener("click", function(e){
+    var b = e.target.closest("button");
+    if(!b) return;
+    submitSearch(b.textContent);
+  });
+  document.getElementById("useSeg").addEventListener("click", function(e){
+    var b = e.target.closest("button");
+    if(!b || !b.getAttribute("data-pane")) return;
+    setUsePane(b.getAttribute("data-pane"));
   });
 
   /* ============ 一键复制 ============ */
